@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Simulates assembled contigs using full genome refereces
 
 import sys
 import os
@@ -27,13 +28,13 @@ def pickLength(minimum, maximum):
 
 	prob = random.randint(0, 100)
 
-	if prob >= 95:
+	if prob >= 99:
 		select_len = random.choice(high)
-	elif 95 < prob >= 85:
+	elif 99 < prob >= 90:
 		select_len = random.choice(high_mid)
-	elif 85 < prob >= 70:
+	elif 90 < prob >= 79:
 		select_len = random.choice(mid)
-	elif 70 < prob >= 50:
+	elif 79 < prob >= 67:
 		select_len = random.choice(low_mid)
 	else:
 		select_len = random.choice(low)
@@ -78,11 +79,16 @@ def calcStats(lengths):
         return(total_seq, total_Mb, n50, n90, median_len, q1, q3, seqs_1k, seqs_5k, shortest, longest)
 
 
+#-------------------------------------------------------------------#
+
+
 output_file = str(sys.argv[1]).rstrip('fastn') + 'sim_contigs.fasta'
 output_file = open(output_file, 'w')
 
-min_len = int(sys.argv[2]) + 200
-max_len = int(sys.argv[3]) + 20
+#min_len = int(sys.argv[2]) + 200
+#max_len = int(sys.argv[3]) + 20
+min_len = 10200
+max_len = 270
 
 with open(sys.argv[1], 'r') as genome_fasta:
 
