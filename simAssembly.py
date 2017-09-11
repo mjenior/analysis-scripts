@@ -27,15 +27,15 @@ def pickLength(minimum, maximum):
 	low_mid = range(fifth, (2*fifth))
 	low = range(minimum, fifth)
 
-	prob = random.randint(0, 100)
+	prob = random.choice(range(0,100))
 
-	if prob >= 96:
+	if prob >= 97:
 		select_len = random.choice(high)
-	elif 96 < prob >= 87:
+	elif 97 > prob and prob >= 93:
 		select_len = random.choice(high_mid)
-	elif 87 < prob >= 76:
+	elif 93 > prob and prob >= 81:
 		select_len = random.choice(mid)
-	elif 76 < prob > 65:
+	elif 81 > prob and prob >= 60:
 		select_len = random.choice(low_mid)
 	else:
 		select_len = random.choice(low)
