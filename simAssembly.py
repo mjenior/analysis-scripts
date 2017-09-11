@@ -8,10 +8,10 @@ import random
 
 def addGaps(sequence):
 
-	leading = random.randint(10, 100)
+	leading = random.randint(5, 50)
 	sequence = sequence[leading:]
 
-	lagging = random.randint(10, 100)
+	lagging = random.randint(5, 50)
 	sequence = sequence[:-lagging] + '\n\n'
 
 	return(sequence)
@@ -19,26 +19,37 @@ def addGaps(sequence):
 
 def pickLength(minimum, maximum):
 
-	fifth = int((maximum - minimum) / 5)
-
-	high = range((4*fifth), maximum)
-	high_mid = range((3*fifth), (4*fifth))
-	mid = range((2*fifth), (3*fifth))
-	low_mid = range(fifth, (2*fifth))
-	low = range(minimum, fifth)
-
+	interval = int(round((maximum - minimum) / 10))
 	prob = random.choice(range(0,100))
 
-	if prob >= 97:
-		select_len = random.choice(high)
-	elif 97 > prob and prob >= 93:
-		select_len = random.choice(high_mid)
-	elif 93 > prob and prob >= 81:
-		select_len = random.choice(mid)
-	elif 81 > prob and prob >= 60:
-		select_len = random.choice(low_mid)
-	else:
-		select_len = random.choice(low)
+	d1 = range((9*interval), maximum)
+	d2 = range((7*interval), (8*interval))
+	d3 = range((6*interval), (7*interval))
+	d4 = range((5*interval), (6*interval))
+	d5 = range((4*interval), (5*interval))
+	d6 = range((3*interval), (4*interval))
+	d7 = range((2*interval), (3*interval))
+	d8 = range(interval, (2*interval))
+	d9 = range(minimum, interval)
+
+	if prob >= 99: # 1%
+		select_len = random.choice(d1)
+	elif 99 > prob and prob >= 97: # 2%
+		select_len = random.choice(d2)
+	elif 97 > prob and prob >= 94: # 3%
+		select_len = random.choice(d3)
+	elif 94 > prob and prob >= 90: # 4%
+		select_len = random.choice(d4)
+	elif 90 > prob and prob >= 84: # 6%
+		select_len = random.choice(d5)
+	elif 84 > prob and prob >= 74: # 10%
+		select_len = random.choice(d6)
+	elif 74 > prob and prob >= 59: # 15%
+		select_len = random.choice(d7)
+	elif 59 > prob and prob >= 39: # 20%
+		select_len = random.choice(d8)
+	else: # 38%
+		select_len = random.choice(d9)
 
 	return(select_len)
 
@@ -62,6 +73,7 @@ def calcStats(lengths):
         n90 = 0
         seqs_1k = 0
         seqs_5k = 0
+        seqs_10k = 0
         percent50_bases = int(round(sum(lengths)*0.5))
         percent90_bases = int(round(sum(lengths)*0.1))
 
@@ -69,25 +81,29 @@ def calcStats(lengths):
         	current_bases += index
         	if index > 1000:
         		seqs_1k += 1
-        	if index > 5000:
-        		seqs_5k += 1
+        		if index > 5000:
+        			seqs_5k += 1
+        			if index > 10000:
+        				seqs_10k += 1
 
         	if current_bases >= percent50_bases and n50 == 0:
         		n50 = index
+        		l50 = lengths.count(index)
         	if current_bases >= percent90_bases and n90 == 0:
         		n90 = index
 
-        return(total_seq, total_Mb, n50, n90, median_len, q1, q3, seqs_1k, seqs_5k, shortest, longest)
+        return(total_seq, total_Mb, n50, n90, median_len, q1, q3, seqs_1k, seqs_5k, seqs_10k, shortest, longest)
 
 
 #-------------------------------------------------------------------#
 
 
-output_file = str(sys.argv[1]).rstrip('fastn') + 'sim_contigs.fasta'
-output_file = open(output_file, 'w')
+output_name = str(sys.argv[1]).rstrip('fastn') + 'sim_contigs.fasta'
+output_file = open(output_name, 'w')
+file_identifier = str(sys.argv[1]).split('.')[0]
 
-min_len = int(sys.argv[2]) + 200
-max_len = int(sys.argv[3]) + 20
+min_len = int(sys.argv[2]) + 100
+max_len = int(sys.argv[3]) + 10
 
 with open(sys.argv[1], 'r') as genome_fasta:
 
@@ -95,6 +111,7 @@ with open(sys.argv[1], 'r') as genome_fasta:
 	current_seq = ''
 	current_len = pickLength(min_len, max_len)
 	seq_lengths = []
+	bases_lost = 0
 
 	for line in genome_fasta:
 
@@ -107,7 +124,7 @@ with open(sys.argv[1], 'r') as genome_fasta:
 
 		if len(current_seq) >= current_len:
 
-			current_contig_name = '>Simulated_contig_' + str(current_contig) + '\n'
+			current_contig_name = '>' + file_identifier + '_simulated_contig_' + str(current_contig) + '\n'
 			output_file.write(current_contig_name)
 			current_contig += 1
 
@@ -115,20 +132,25 @@ with open(sys.argv[1], 'r') as genome_fasta:
 			output_seq = addGaps(output_seq)
 			output_file.write(output_seq)
 			seq_lengths.append(len(output_seq))
-
+			bases_lost += (len(current_seq[:current_len]) - len(output_seq))
 			current_seq = current_seq[current_len:]
 			current_len = pickLength(min_len, max_len) # reassign new length
 
 
-current_contig_name = '>Simulated_contig_' + str(current_contig) + '\n'
+current_contig_name = '>' + file_identifier + '_simulated_contig_' + str(current_contig) + '\n'
 output_file.write(current_contig_name)
 output_file.write(current_seq)
 output_file.close()
 
 stat_list = calcStats(seq_lengths)
+bases_lost = bases_lost / 1000.00
+bases_lost = "%.2f" % bases_lost
+
 output_string = """
+# Simulated assembly: {fasta}
 # Total contigs: {total_seq}
 # Total bases: {total_mb} Mb
+# Bases removed: {lost} kb
 # N50: {n50}
 # N90: {n90}
 # Median length: {med_len}
@@ -136,9 +158,12 @@ output_string = """
 # Q3: {q3}
 # Contigs > 1 kb: {seqs_1k}
 # Contigs > 5 kb: {seqs_5k}
+# Contigs > 10 kb: {seqs_10k}
 # Shorest contig: {shortest}
 # Longest contig: {longest}
-""".format(total_seq = str(stat_list[0]), 
+""".format(fasta = output_name,
+	total_seq = str(stat_list[0]), 
+	lost = str(bases_lost),
 	total_mb = str(stat_list[1]),
 	n50 = str(stat_list[2]),
 	n90 = str(stat_list[3]),
@@ -147,8 +172,9 @@ output_string = """
 	q3 = str(stat_list[6]),
 	seqs_1k = str(stat_list[7]),
 	seqs_5k = str(stat_list[8]),
-	shortest = str(stat_list[9]),
-	longest = str(stat_list[10]))
+	seqs_10k = str(stat_list[9]),
+	shortest = str(stat_list[10]),
+	longest = str(stat_list[11]))
 
 print output_string
 
