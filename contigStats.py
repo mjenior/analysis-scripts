@@ -12,11 +12,14 @@ def read_lengths(fasta):
         len_list = []
         gc_count = 0
         for line in fasta:
-                if line != '\n' or line[0] != '>':
+                if line == '\n':
+                        continue
+                elif line[0] == '>':
+                        continue
+                else:
                         len_list.append(len(line.strip()))
                         gc_count += line.upper().count('G') + line.upper().count('C')
         
-        len_list.sort()
         gc_percent = round(((gc_count / sum(len_list)) * 100), 2)
 
         return(len_list, gc_percent)
@@ -24,6 +27,9 @@ def read_lengths(fasta):
 # This function calculates and returns all the printed statistics.
 def calc_stats(lengths):
 
+        lengths.sort()
+        shortest = lengths[0]
+        longest = lengths[-1]
         total_contigs = len(lengths) # Total number of sequences
         len_sum = sum(lengths) # Total number of residues
         total_Mb = len_sum/1000000.00 # Total number of residues expressed in Megabases
@@ -77,7 +83,7 @@ def calc_stats(lengths):
         else:
                 l50 = lengths.count(n50)
 
-        return(total_contigs, total_Mb, n50, l50, n90, median_len, iqr, seqs_1000, seqs_5000)
+        return(total_contigs, total_Mb, n50, l50, n90, median_len, iqr, seqs_1000, seqs_5000, shortest, longest)
 
 #----------------------------------------------------------------------------------------#
 
@@ -86,7 +92,7 @@ if os.stat(str(sys.argv[1])).st_size == 0:
         sys.exit()
 
 with open(sys.argv[1], 'r') as contigs:
-        contig_lengths = read_fasta(open(sys.argv[1], 'r'))
+        contig_lengths = read_lengths(open(sys.argv[1], 'r'))
 
 stat_list = calc_stats(contig_lengths[0])
 
@@ -111,8 +117,8 @@ output_string = """# Input file name: {filename}
         n90 = stat_list[4],
         median_len = stat_list[5], 
         iqr = stat_list[6], 
-        short = seq_lengths[0], 
-        long = seq_lengths[-1],  
+        short = stat_list[9], 
+        long = stat_list[10],  
         seqs_1k = stat_list[7], 
         seqs_5k = stat_list[8],
         gc = contig_lengths[1])

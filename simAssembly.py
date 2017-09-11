@@ -8,10 +8,10 @@ import random
 
 def addGaps(sequence):
 
-	leading = random.randint(5, 50)
+	leading = random.randint(1, 25)
 	sequence = sequence[leading:]
 
-	lagging = random.randint(5, 50)
+	lagging = random.randint(1, 25)
 	sequence = sequence[:-lagging] + '\n\n'
 
 	return(sequence)
@@ -102,8 +102,8 @@ output_name = str(sys.argv[1]).rstrip('fastn') + 'sim_contigs.fasta'
 output_file = open(output_name, 'w')
 file_identifier = str(sys.argv[1]).split('.')[0]
 
-min_len = int(sys.argv[2]) + 100
-max_len = int(sys.argv[3]) + 10
+min_len = int(sys.argv[2]) + 50
+max_len = int(sys.argv[3]) + 2
 
 with open(sys.argv[1], 'r') as genome_fasta:
 
@@ -161,7 +161,7 @@ output_string = """
 # Contigs > 10 kb: {seqs_10k}
 # Shorest contig: {shortest}
 # Longest contig: {longest}
-""".format(fasta = output_name,
+""".format(fasta = file_identifier,
 	total_seq = str(stat_list[0]), 
 	lost = str(bases_lost),
 	total_mb = str(stat_list[1]),
