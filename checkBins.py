@@ -68,6 +68,7 @@ unique_entries = len(list(set(entry_lst)))
 most_frequent = max(set(entry_lst), key=entry_lst.count)
 count_frequent = entry_lst.count(most_frequent)
 contamination = (float((len(entry_lst) - count_frequent)) / float(len(entry_lst))) * 100.0
+contamination = "%.3f" % contamination
 
 stat_list = calcStats(len_lst)
 
@@ -89,6 +90,7 @@ output_string = """# Binned contig file: {fasta}
 # Contigs > 10 kb: {seqs_10k}
 # Shorest contig: {shortest}
 # Longest contig: {longest}
+
 #-----------------------------------------#
 """.format(fasta = str(sys.argv[1]),
 	uniques = str(unique_entries),
