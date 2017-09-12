@@ -46,8 +46,8 @@ def calcStats(lengths):
 
 with open(sys.argv[1], 'r') as binned_contigs:
 
-	entry_dict = {}
-	seq_lens = []
+	entry_lst = []
+	len_lst = []
 
 	for line in binned_contigs:
 
@@ -57,27 +57,24 @@ with open(sys.argv[1], 'r') as binned_contigs:
 		elif line[0] == '>':
 			entry = line.split('_')[0]
 			entry = entry.lstrip('>')
-			if not entry in entry_dict.keys():
-				entry_dict[entry] = 1
-			else:
-				entry_dict[entry] = entry_dict[entry] + 1
+			entry_lst.append(entry)
 			continue
 
 		else:
-			seq_lens.append(len(line.strip()))
+			len_lst.append(len(line.strip()))
 
 
-unique_entries = len(list(set(entry_dict.keys())))
-most_frequent = max(set(entry_dict.keys()), key=entry_dict.keys().count)
-contamination = ((len(entry_dict.keys()) - entry_dict.keys().count(most_frequent)) / len(entry_dict.keys()) * 100
-contamination = "%.2f" % contamination
+unique_entries = len(list(set(entry_lst)))
+most_frequent = max(set(entry_lst), key=entry_lst.count)
+count_frequent = entry_lst.count(most_frequent)
+contamination = (float((len(entry_lst) - count_frequent)) / float(len(entry_lst))) * 100.0
 
-stat_list = calcStats(seq_lens)
+stat_list = calcStats(len_lst)
 
-output_string = """
-# Binned contig file: {fasta}
+output_string = """# Binned contig file: {fasta}
 # Unique sources: {uniques}
 # Most frequent source: {frequent}
+# Total from most frequent: {top_freq}
 # Contaminants: {contam} %
 
 # Total contigs: {total_seq}
@@ -92,9 +89,11 @@ output_string = """
 # Contigs > 10 kb: {seqs_10k}
 # Shorest contig: {shortest}
 # Longest contig: {longest}
+#-----------------------------------------#
 """.format(fasta = str(sys.argv[1]),
 	uniques = str(unique_entries),
 	frequent = str(most_frequent),
+	top_freq = str(count_frequent),
 	contam = str(contamination),
 	total_seq = str(stat_list[0]), 
 	total_mb = str(stat_list[1]),
