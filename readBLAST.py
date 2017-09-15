@@ -22,6 +22,7 @@ with open(sys.argv[1], 'r') as in_file:
 			hit = hit[1]
 		else:
 			hit = hit[1] + '|' + hit[2]
+		hit = hit.lower()
 		perc_id = str(line.split()[2])
 		evalue = str(line.split()[10])
 
