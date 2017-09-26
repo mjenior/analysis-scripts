@@ -9,6 +9,7 @@ def sliceFastq(fastq, seq_lmt, sample_name):
 
 	curr_seq = 0
 	curr_slice = 1
+	all_seqs = 0
 	curr_out = sample_name + '.slice_' + str(curr_slice) + '.fastq'
 	curr_out = open(curr_out, 'w')
 
@@ -23,8 +24,12 @@ def sliceFastq(fastq, seq_lmt, sample_name):
 
 		if line[0] == '@':
 			curr_seq += 1
+			all_seqs +=1
 		
 		curr_out.write(line)
+
+		if all_seqs % 1000 == 0:
+			print(str(all_seqs))
 
 	curr_out.close()
 	return(curr_slice)
@@ -34,6 +39,7 @@ def sliceFasta(fasta, seq_lmt, sample_name):
 
 	curr_seq = 0
 	curr_slice = 1
+	all_seqs = 0
 	curr_out = sample_name + '.slice_' + str(curr_slice) + '.fasta'
 	curr_out = open(curr_out, 'w')
 
@@ -48,8 +54,12 @@ def sliceFasta(fasta, seq_lmt, sample_name):
 
 		if line[0] == '>':
 			curr_seq += 1
+			all_seqs +=1
 		
 		curr_out.write(line)
+
+		if all_seqs % 1000 == 0:
+			print(str(all_seqs))
 
 	curr_out.close()
 	return(curr_slice)
@@ -67,5 +77,5 @@ with open(sys.argv[1], 'r') as input_file:
 		slices = sliceFasta(input_file, slice_size, sample)
 
 
-print('Total slices: ' + str(slices))
+print('\nTotal slices: ' + str(slices))
 
