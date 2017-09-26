@@ -31,26 +31,16 @@ def calc_stats(lengths):
         # interquartile range
         if total_reads >= 4:
 
-                median_len = lengths[int(round(total_reads/2))] # Median sequence length
-
-                q1 = lengths[0:(int(total_reads/2)-1)]
-                if len(q1) == 0:
-                        q1 = lengths[0]
-                else:
-                        q1 = q1[int(len(q1)/2)]
-
-                q3 = lengths[(int(total_reads/2)+1):-1]
-                if len(q3) == 0:
-                        q3 = lengths[-1]
-                else:
-                        q3 = q3[int(len(q3)/2)]
-                iqr = int(q3 - q1)
-
+                median_len = lengths[int(round(total_reads/2))]
+                mode_len = max(set(lengths), key=lengths.count)
+                mode_count = lengths.count(mode_len)
+                
         else:
-                iqr = 'Too few sequences to calculate'
+                mode_len = 'Too few sequences to calculate'
+                mode_count = 'Too few sequences to calculate'
                 median_len = 'Too few sequences to calculate'
 
-        return([total_reads, total_Mb, shortest_read, longest_read, median_len, iqr])
+        return([total_reads, total_Mb, shortest_read, longest_read, median_len, mode_len, mode_count])
 
 
 read_lens = read_lengths(open(sys.argv[1], 'r'))
@@ -63,14 +53,16 @@ output_str = """# Input file name: {filename}
 # Shortest read length: {short}
 # Longest read length: {long}
 # Median read length: {med}
-# Interquartile range: {iqr}
+# Mode read length: {mode}
+# Mode frequency: {mode_freq}
 """.format(filename = str(sys.argv[1]).split('/')[-1],
         reads = stat_lst[0],
         mb = "%.2f" % stat_lst[1],
         short = stat_lst[2],
         long = stat_lst[3],
         med = stat_lst[4],
-        iqr = stat_lst[5])
+        mode = stat_lst[5],
+        mode_freq = stat_lst[6])
 
 print output_str
 
