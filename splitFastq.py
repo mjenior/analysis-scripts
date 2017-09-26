@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # USAGE: splitFastq.py interleaved_fastq
-# Splits an interleaved fastq into separate files for forward and reverse reads
+# Splits an interleaved fastq into separate files of forward and reverse reads
 
 import sys
 
