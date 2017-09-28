@@ -12,7 +12,7 @@ with open(sys.argv[1], 'r') as in_fasta:
 
 	include = 0
 	skip = 0
-	curr_name = in_fasta.readline().replace(' ', '_')
+	curr_name = in_fasta.readline().replace(' ', '|')
 	curr_seq = ''
 
 	for line in in_fasta:
@@ -25,7 +25,7 @@ with open(sys.argv[1], 'r') as in_fasta:
 				include += 1
 			else:
 				skip += 1
-			curr_name = line.replace(' ', '_')
+			curr_name = line.replace(' ', '|')
 			curr_seq = ''
 		else:
 			curr_seq = curr_seq + line.strip()
