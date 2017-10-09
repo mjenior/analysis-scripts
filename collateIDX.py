@@ -19,6 +19,8 @@ def add2dict(idx, idx_dict):
 			except ValueError:
 				pass
 
+			if gene == 'gene_target': continue
+
 			if not gene in idx_dict.keys():
 				idx_dict[gene] = [str(reads)]
 			else:
@@ -48,7 +50,7 @@ with open(sys.argv[2], 'r') as files:
 		idx_dictionary = add2dict(line.strip(), idx_dictionary)
 
 
-with open(sys.argv[3], 'r') as out_file:
+with open(sys.argv[3], 'w') as out_file:
 	header = '\t'.join(header) + '\n'
 	out_file.write(header)
 	for index in idx_dictionary.keys():
