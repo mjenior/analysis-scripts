@@ -17,10 +17,12 @@ with open(sys.argv[1], 'r') as fastq:
 	for line in fastq:
 
 		if line[0] == '@' and line.strip()[-1] == '1':
+			line = line.replace(' ', '_')
 			current_read = 1
 			read_1.write(line)
 			continue
 		elif line[0] == '@' and line.strip()[-1] == '2':
+			line = line.replace(' ', '_')
 			current_read = 2
 			read_2.write(line)
 			continue
