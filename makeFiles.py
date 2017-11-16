@@ -2,16 +2,15 @@
 # USAGE: makeFiles.py file_name
 
 import sys
-from os
-from os.path import isfile, join
+import glob
 
-fastqs = [x for x in os.listdir(str(os.getcwd())) if isfile(join(str(os.getcwd()), x))]
-fastqs = list(set(fastqs))
+fastqR1 = glob.glob('*R1*')
 
-with open(sys.argv[1], 'w') as out_files:
+with open(sys.argv[1], 'w') as outFiles:
 
-	for index in fastqs:
-		entry = str(index).split('.')[0]
-		entry = entry + '\t' + entry + '.R1.fastq\t' + entry + '.R2.fastq\n'
-		out_files.write(entry)
+	for R1 in fastqR1:
+		name = str(R1).split('_')[0]
+		R2 = R1.replace('R1','R2')
+		entry = name + '\t' + R1 + '\t' + R2 + '\n'
+		outFiles.write(entry)
 
