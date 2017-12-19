@@ -3,35 +3,40 @@
 This script calculates various statistics about the provided fasta or fastq file.
 '''
 import sys
-import os
 
 # This function reads in fasta file, appends the length of each sequence to a list, and counts all Gs & Cs.
         # It returns a sorted list of sequence lengths with the G+C % as the last element.
 def read_lengths(fasta):
 
         len_lst = []
+        gc_cnt = 0
+        all_cnt = 0
         for line in fasta:
-                if line == '\n':
-                        continue
-                elif line[0] == '>':
-                        continue
-                else:
-                        len_lst.append(len(line.strip()))
-        
-        return(len_lst)
+                if line == '\n' or line[0] == '>': continue
+                line = line.strip().upper()
+                gc_cnt += line.count('G')
+                gc_cnt += line.count('C')
+                all_cnt += len(line)
+                len_lst.append(len(line))
+
+        gc_prcnt = str(round((float(gc_cnt) / float(all_cnt)) * 100.0, 2))
+        len_lst.sort()
+
+        return(len_lst, gc_prcnt)
 
 # This function calculates and returns all the printed statistics.
 def calc_stats(lengths):
 
-        lengths.sort()
         shortest = lengths[0]
         longest = lengths[-1]
         total_contigs = len(lengths) # Total number of sequences
         len_sum = sum(lengths) # Total number of residues
         total_Mb = len_sum/1000000.00 # Total number of residues expressed in Megabases
-        median_len = lengths[int(round(total_contigs/2))] # Median sequence length
-        q1 = lengths[0:median_len][int(len(lengths[0:median_len])/2)]
-        q3 = lengths[median_len:-1][int(len(lengths[median_len:-1])/2)]
+        mid_pos = int(round(total_contigs/2))
+
+        median_len = lengths[mid_pos] # Median sequence length
+        q1 = lengths[0:mid_pos][int(len(lengths[0:mid_pos])/2)]
+        q3 = lengths[mid_pos:-1][int(len(lengths[mid_pos:-1])/2)]
  
         current_bases = 0
         n50 = 0
@@ -62,24 +67,25 @@ def calc_stats(lengths):
 #----------------------------------------------------------------------------------------#
 
 with open(sys.argv[1], 'r') as contigs:
-        contig_lengths = read_lengths(open(sys.argv[1], 'r'))
+        contig_lengths, gc_content = read_lengths(open(sys.argv[1], 'r'))
 
 stat_list = calc_stats(contig_lengths)
 
 output_string = """
-Input file name: {filename}
+# Assembly name: {filename}
 # Total contigs: {total_contigs}
 # Total bases: {total_mb} Mb
-# Sequence N50: {n50}
-# Sequence L50: {l50}
-# Sequence N90: {n90}
-# Median sequence length: {median_len}
+# G+C content: {gc}%
+# N50: {n50}
+# L50: {l50}
+# N90: {n90}
+# Median length: {median_len}
 # Q1: {q1}
 # Q3: {q3}
-# Shortest sequence length: {short}
-# Longest sequence length: {long}
-# Sequences > 1 kb: {seqs_1k}
-# Sequences > 5 kb: {seqs_5k}
+# Shortest length: {short}
+# Longest length: {long}
+# Contigs > 1 kb: {seqs_1k}
+# Contigs > 5 kb: {seqs_5k}
 """.format(filename = str(sys.argv[1]).split('/')[-1],  
         total_contigs = stat_list[0], 
         total_mb = "%.2f" % stat_list[1], 
@@ -92,6 +98,7 @@ Input file name: {filename}
         short = stat_list[10], 
         long = stat_list[11],  
         seqs_1k = stat_list[8], 
-        seqs_5k = stat_list[9])
+        seqs_5k = stat_list[9],
+        gc = gc_content)
 
 print(output_string)

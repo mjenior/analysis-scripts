@@ -67,7 +67,7 @@ with open(sys.argv[1],'r') as metaphlan:
 
 
 
-# NEED TO WRITE TAXONMOY FILE!!!!!!
+# NEED TO WRITE TAXONOMY FILE!!!!!!
 
 
 

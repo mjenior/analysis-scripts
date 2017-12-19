@@ -4,27 +4,29 @@ Reformats fasta files to be uniform
 '''
 import sys
 
-outFna = str(sys.argv[1]).rstrip('fastn') + 'format.fasta'
-outFna = open(outFna, 'w')
+outFasta = str(sys.argv[1]).rstrip('fastnx') + 'format.fasta'
+outFasta = open(outFasta, 'w')
 
-with open(sys.argv[1], 'r') as inFna:
+with open(sys.argv[1], 'r') as inFasta:
 
-	seq = 'first'
-	for line in inFna:
-		if line == '\n':
-			continue
-		elif line[0] == '>':
-			if seq != 'first':
+	firstLine = inFasta.readline()
+	firstLine = firstLine.replace(' ', '_').replace('|', '__').replace(',', '_')
+	outFasta.write(firstLine)
+
+	seq = ''
+	for line in inFasta:
+
+		if line[0] == '>':
 				seq = seq.upper() + '\n\n'
-				outFna.write(seq)
+				outFasta.write(seq)
 				seq = ''
-			else:
-				seq = ''
-			entry = line.replace('   ', '\t')
-			entry = entry.replace(' ', '_')
-			entry = '__'.join(entry.split()) + '\n'
-			outFna.write(entry)
+				
+				line = line.replace(' ', '_').replace('|', '__').replace(',', '_')
+				outFasta.write(line)
+				continue
 		else:
-			seq = seq + line.strip()
+			seq += line.strip()
 
-outFna.close()
+seq = seq.upper() + '\n\n'
+outFasta.write(seq)
+outFasta.close()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Simulates assembled contigs using full genome refereces
-# simAssembly.py genome.fasta min_contig_length max_contig_length
+# simAssembly.py genome.fasta 1500 10000
 
 import sys
 import os
@@ -15,7 +15,6 @@ def addGaps(sequence):
 	sequence = sequence[:-lagging] + '\n\n'
 
 	return(sequence)
-
 
 def pickLength(minimum, maximum):
 
@@ -63,9 +62,11 @@ def calcStats(lengths):
         lengths.sort()
         shortest = lengths[0]
         longest = lengths[-1]
-        median_len = lengths[int(round(total_seq/2))] 
-        q1 = lengths[int(round(len(lengths) * 0.25))]
-        q3 = lengths[int(round(len(lengths) * 0.75))]
+
+        mid_pos = int(round(total_seq/2))
+        median_len = lengths[mid_pos]
+        q1 = lengths[0:mid_pos][int(len(lengths[0:mid_pos])/2)]
+        q3 = lengths[mid_pos:-1][int(len(lengths[mid_pos:-1])/2)]
 
         #n50 calculation loop
         current_bases = 0
@@ -98,16 +99,16 @@ def calcStats(lengths):
 #-------------------------------------------------------------------#
 
 
-output_name = str(sys.argv[1]).rstrip('fastn') + 'sim_contigs.fasta'
+output_name = str(sys.argv[1]).rstrip('fastn') + 'simContigs.fasta'
 output_file = open(output_name, 'w')
 file_identifier = str(sys.argv[1]).split('.')[0]
 
-min_len = int(sys.argv[2]) + 50
-max_len = int(sys.argv[3]) + 2
+min_len = int(sys.argv[2])
+max_len = int(sys.argv[3])
 
 with open(sys.argv[1], 'r') as genome_fasta:
 
-	current_contig = 1
+	current_contig = 0
 	current_seq = ''
 	current_len = pickLength(min_len, max_len)
 	seq_lengths = []
@@ -123,34 +124,45 @@ with open(sys.argv[1], 'r') as genome_fasta:
 		current_seq += line.strip()
 
 		if len(current_seq) >= current_len:
-
-			current_contig_name = '>' + file_identifier + '_simulated_contig_' + str(current_contig) + '\n'
-			output_file.write(current_contig_name)
 			current_contig += 1
+			current_contig_name = '>' + file_identifier + '_simContig_' + str(current_contig) + '\n'
+			output_file.write(current_contig_name)
 
-			output_seq = current_seq[:current_len]
-			output_seq = addGaps(output_seq)
+			output_seq = current_seq[:current_len] + '\n\n'
+			#output_seq = addGaps(output_seq)
 			output_file.write(output_seq)
-			seq_lengths.append(len(output_seq))
-			bases_lost += (len(current_seq[:current_len]) - len(output_seq))
+			seq_lengths.append(len(output_seq)-4)
 			current_seq = current_seq[current_len:]
 			current_len = pickLength(min_len, max_len) # reassign new length
 
+current_len = pickLength(min_len, max_len)
+while len(current_seq) > current_len:
+	current_contig += 1
+	current_contig_name = '>' + file_identifier + '_simContig_' + str(current_contig) + '\n'
+	output_file.write(current_contig_name)
 
-current_contig_name = '>' + file_identifier + '_simulated_contig_' + str(current_contig) + '\n'
+	output_seq = current_seq[:current_len] + '\n\n'
+	output_file.write(current_seq)
+	seq_lengths.append(len(output_seq)-4)
+
+	current_seq = current_seq[current_len:]
+	current_len = pickLength(min_len, max_len)
+
+current_contig += 1
+current_contig_name = '>' + file_identifier + '_simContig_' + str(current_contig) + '\n'
 output_file.write(current_contig_name)
-output_file.write(current_seq)
+output_seq = current_seq + '\n'
+output_file.write(output_seq)
+seq_lengths.append(len(output_seq)-2)
 output_file.close()
 
+
 stat_list = calcStats(seq_lengths)
-bases_lost = bases_lost / 1000.00
-bases_lost = "%.2f" % bases_lost
 
 output_string = """
 # Simulated assembly: {fasta}
 # Total contigs: {total_seq}
 # Total bases: {total_mb} Mb
-# Bases removed: {lost} kb
 # N50: {n50}
 # N90: {n90}
 # Median length: {med_len}
@@ -163,7 +175,6 @@ output_string = """
 # Longest contig: {longest}
 """.format(fasta = file_identifier,
 	total_seq = str(stat_list[0]), 
-	lost = str(bases_lost),
 	total_mb = str(stat_list[1]),
 	n50 = str(stat_list[2]),
 	n90 = str(stat_list[3]),
