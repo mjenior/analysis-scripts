@@ -18,12 +18,19 @@ def countKmers(contig, kmerDict, kmerSet, window):
 			if len(kmer) < window or 'N' in kmer:
 				continue
 
-			if not kmer in kmerSet:
+			try:
+				kmerDict[kmer] += 1
+				continue
+			except KeyError:
 				kmerDict[kmer] = 1
 				kmerSet.add(kmer)
+
+		# Normalize abundances by contig length
+		for index in kmerSet:
+			try:
+				kmerDict[index] = kmerDict[index] / len(contig)
+			except KeyError:
 				continue
-			else:
-				kmerDict[kmer] += 1
 
 	return(kmerDict, kmerSet)
 
@@ -31,7 +38,7 @@ def countKmers(contig, kmerDict, kmerSet, window):
 # Builds table of kmer abundances for each contig
 def kmerTable(kmerDict, kmerSet, outFile):
 
-	entry = [kmerDict['name'], '\t']
+	entry = [kmerDict['contig_name'], '\t']
 	for kmer in kmerSet:
 		try:
 			entry.append(str(kmerDict[kmer]))
@@ -56,8 +63,8 @@ with open(sys.argv[1], 'r') as inFasta:
 	while firstLine == '\n':
 		firstLine = inFasta.readline()
 	kmerFreqDict = {}
-	name = firstLine.strip().lstrip('>').replace(' ', '_')
-	kmerFreqDict['name'] = name
+	contig_name = firstLine.strip().lstrip('>').replace(' ', '_')
+	kmerFreqDict['contig_name'] = contig_name
 
 	for line in inFasta:
 		if line[0] == '>':
@@ -65,20 +72,20 @@ with open(sys.argv[1], 'r') as inFasta:
 			allDict.append(kmerFreqDict)
 			sequence = ''
 			kmerFreqDict = {}
-			name = firstLine.strip().lstrip('>').replace(' ', '_')
-			kmerFreqDict['name'] = name
+			contig_name = firstLine.strip().lstrip('>').replace(' ', '_')
+			kmerFreqDict['contig_name'] = contig_name
 			continue
 		else:
 			sequence += line.strip()
 
-kmerFreqDict, uniqueKmers = countKmers(seq, kmerFreqDict, uniqueKmers, windowSize)
+kmerFreqDict, uniqueKmers = countKmers(sequence, kmerFreqDict, uniqueKmers, windowSize)
 allDict.append(kmerFreqDict)
 
 
 # Write final counts to a file
 with open(sys.argv[3], 'w') as abundanceTable:
-	entry = 'Contig\t' + '\t'.join(list(allDict)) + '\n'
+	entry = 'Contig\t' + '\t'.join(list(uniqueKmers)) + '\n'
 	abundanceTable.write(entry)
 	for contig in allDict:
-		kmerTable(allDict, uniqueKmers, abundanceTable)
+		kmerTable(contig, uniqueKmers, abundanceTable)
 
