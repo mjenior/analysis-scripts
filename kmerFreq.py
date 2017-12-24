@@ -15,9 +15,7 @@ def countKmers(contig, kmerDict, kmerSet, window):
 		kmerList = [contig[nucleotide:nucleotide + window] for nucleotide in range(frame, len(contig), window)]
 
 		for kmer in kmerList:
-			if len(kmer) < window:
-				continue
-			elif 'N' in kmer:
+			if len(kmer) < window or 'N' in kmer:
 				continue
 
 			if not kmer in kmerSet:
