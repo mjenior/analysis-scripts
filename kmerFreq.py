@@ -26,22 +26,24 @@ def countKmers(contig, kmerDict, kmerSet, window):
 				kmerSet.add(kmer)
 
 		# Normalize abundances by contig length
-		for index in kmerSet:
-			try:
-				kmerDict[index] = kmerDict[index] / len(contig)
-			except KeyError:
-				continue
+		#for index in kmerSet:
+		#	try:
+		#		kmerDict[index] = kmerDict[index] / len(contig)
+		#	except KeyError:
+		#		continue
 
 	return(kmerDict, kmerSet)
 
 
 # Builds table of kmer abundances for each contig
-def kmerTable(kmerDict, kmerSet, outFile):
+def kmerTable(kmerDict, kmerSet, outFile, abundList):
 
 	entry = [kmerDict['contig_name'], '\t']
 	for kmer in kmerSet:
 		try:
-			entry.append(str(kmerDict[kmer]))
+			currAbund = kmerDict[kmer]
+			abundList.append(float(currAbund))
+			entry.append(str(currAbund))
 			entry.append('\t')
 		except KeyError:
 			continue
@@ -49,10 +51,13 @@ def kmerTable(kmerDict, kmerSet, outFile):
 	entry = ''.join(entry) + '\n'
 	outFile.write(entry)
 
+	return(abundList)
+
 
 # Read through and format nucleotide fasta, counting tetranucleotides along the way
 with open(sys.argv[1], 'r') as inFasta:
 
+	print('\nReading kmer frequencies...')
 	sequence = ''
 	uniqueKmers = set()
 	allDict = []
@@ -80,12 +85,30 @@ with open(sys.argv[1], 'r') as inFasta:
 
 kmerFreqDict, uniqueKmers = countKmers(sequence, kmerFreqDict, uniqueKmers, windowSize)
 allDict.append(kmerFreqDict)
+print('Done.')
 
 
 # Write final counts to a file
 with open(sys.argv[3], 'w') as abundanceTable:
+	print('Creating abundance table and calculating summaries...')
+	abundances = []
 	entry = 'Contig\t' + '\t'.join(list(uniqueKmers)) + '\n'
 	abundanceTable.write(entry)
 	for contig in allDict:
-		kmerTable(contig, uniqueKmers, abundanceTable)
+		abundances = kmerTable(contig, uniqueKmers, abundanceTable, abundances)
+	print('Done.\n')
 
+
+# Calculate summary statistics
+abundances.sort()
+mid_pos = int(round(len(abundances)/2))
+median_len = abundances[mid_pos] # Median sequence length
+q1 = abundances[0:mid_pos][int(len(abundances[0:mid_pos])/2)]
+q3 = abundances[mid_pos:-1][int(len(abundances[mid_pos:-1])/2)]
+iqr = q3 - q1
+
+print('Kmer length: ' + str(windowSize))
+print('Median kmer abundance: ' + str(median_len))
+print('Q1 kmer abundance: ' + str(q1))
+print('Q2 kmer abundance: ' + str(q3))
+print('IQR kmer abundance: ' + str(iqr) + '\n')
