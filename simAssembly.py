@@ -98,13 +98,27 @@ def calcStats(lengths):
 
 #-------------------------------------------------------------------#
 
+# Check for user fuck ups
+try:
+	min_len = int(sys.argv[2])
+except:
+	min_len = 250
+try:
+	max_len = int(sys.argv[3])
+except:
+	max_len = 25000
+try:	
+	gaps = str(sys.argv[4])
+except:
+	gaps = 'n'
+if gaps == 'y':
+	with_gaps = '.gaps_added'
+else:
+	with_gaps = ''
 
-output_name = str(sys.argv[1]).rstrip('fastn') + 'simContigs.fasta'
+output_name = str(sys.argv[1]).rstrip('fastn') + 'simContigs.' + str() + 'to' + str() + with_gaps + '.fasta'
 output_file = open(output_name, 'w')
 file_identifier = str(sys.argv[1]).split('.')[0]
-
-min_len = int(sys.argv[2])
-max_len = int(sys.argv[3])
 
 with open(sys.argv[1], 'r') as genome_fasta:
 
@@ -127,9 +141,14 @@ with open(sys.argv[1], 'r') as genome_fasta:
 			current_contig += 1
 			current_contig_name = '>' + file_identifier + '_simContig_' + str(current_contig) + '\n'
 			output_file.write(current_contig_name)
+			output_seq = current_seq[:current_len]
 
-			output_seq = current_seq[:current_len] + '\n\n'
-			#output_seq = addGaps(output_seq)
+			# Introduce artificial gaps in the assembly
+			if gaps == 'y':
+				output_seq = addGaps(output_seq)
+			else:
+				output_seq = output_seq + '\n\n'
+			
 			output_file.write(output_seq)
 			seq_lengths.append(len(output_seq)-4)
 			current_seq = current_seq[current_len:]
