@@ -14,7 +14,10 @@ def addGaps(sequence):
 	lagging = random.randint(1, 25)
 	sequence = sequence[:-lagging] + '\n\n'
 
-	return(sequence)
+	removed = 0
+	removed = leading + lagging
+
+	return(sequence, removed)
 
 def pickLength(minimum, maximum):
 
@@ -145,7 +148,8 @@ with open(sys.argv[1], 'r') as genome_fasta:
 
 			# Introduce artificial gaps in the assembly
 			if gaps == 'y':
-				output_seq = addGaps(output_seq)
+				output_seq, gap = addGaps(output_seq)
+				bases_lost += gap
 			else:
 				output_seq = output_seq + '\n\n'
 			
@@ -160,7 +164,13 @@ while len(current_seq) > current_len:
 	current_contig_name = '>' + file_identifier + '_simContig_' + str(current_contig) + '\n'
 	output_file.write(current_contig_name)
 
-	output_seq = current_seq[:current_len] + '\n\n'
+	output_seq = current_seq[:current_len]
+	if gaps == 'y':
+		output_seq, gap = addGaps(output_seq)
+		bases_lost += gap
+	else:
+		output_seq = output_seq + '\n\n'
+
 	output_file.write(current_seq)
 	seq_lengths.append(len(output_seq)-4)
 
@@ -181,6 +191,7 @@ stat_list = calcStats(seq_lengths)
 output_string = """
 # Simulated assembly: {fasta}
 # Total contigs: {total_seq}
+# Removed bases: {removed}
 # Total bases: {total_mb} Mb
 # N50: {n50}
 # N90: {n90}
@@ -193,6 +204,7 @@ output_string = """
 # Shorest contig: {shortest}
 # Longest contig: {longest}
 """.format(fasta = file_identifier,
+	removed = str(bases_lost),
 	total_seq = str(stat_list[0]), 
 	total_mb = str(stat_list[1]),
 	n50 = str(stat_list[2]),
