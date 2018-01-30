@@ -71,7 +71,7 @@ def calc_stats(lengths):
         mean_len = sum(lengths) / len(lengths)
         sd = standDev(lengths)
 
-        # Pearson’s Coefficient of Skewness
+        # Pearsons Coefficient of Skewness
         skew = ((mean_len - median_len) * 3) / sd
         mean_len = round(mean_len, 2)
         sd = round(sd, 2)
@@ -122,31 +122,30 @@ stat_list.append(gc_content)
 stat_list.append(n_count)
 
 output_string = """
-# Assembly name: {filename}
-# Total contigs: {total_contigs}
-# Total bases: {total_mb} Mb
-# Ns: {ns}
-# G+C content: {gc}%
---------------------------------
-# N50: {n50}
-# L50: {l50}
-# N90: {n90}
---------------------------------
-# Median length: {median_len}
-# Q1: {q1}
-# Q3: {q3}
-# IQR: {iqr}
-# Mean length: {mean}
-# Standard deviation: {sd}
-# Skewness: {skewness}
---------------------------------
-# Shortest length: {short}
-# Longest length: {long}
-# Contigs < 1 kb: {short_contigs}
-# Contigs > 1 kb: {seqs_1k}
-# Contigs > 5 kb: {seqs_5k}
-# Contigs > 10 kb: {seqs_10k}
-
+Assembly:       {filename}
+Contigs:        {total_contigs}
+Bases(Mb):      {total_mb}
+Ns:             {ns}
+G+C(%):         {gc}
+-----------------------------------
+N50:            {n50}
+L50:            {l50}
+N90:            {n90}
+-----------------------------------
+Median:         {median_len}
+Q1:             {q1}
+Q3:             {q3}
+IQR:            {iqr}
+Mean:           {mean}
+Std:            {sd}
+Skewness:       {skewness}
+-----------------------------------
+Shortest:       {short}
+Longest:        {long}
+Contigs<1kb:    {short_contigs}
+Contigs>1kb:    {seqs_1k}
+Contigs>5kb:    {seqs_5k}
+Contigs>10kb:   {seqs_10k}
 """.format(filename = str(sys.argv[1]).split('/')[-1],  
         total_contigs = stat_list[0], 
         total_mb = "%.2f" % stat_list[1], 

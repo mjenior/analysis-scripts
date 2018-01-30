@@ -47,14 +47,14 @@ read_lens = read_lengths(open(sys.argv[1], 'r'))
 
 stat_lst = calc_stats(read_lens)
 
-output_str = """# Input file name: {filename}
-# Total reads: {reads}
-# Total bases: {mb} Mb
-# Shortest read length: {short}
-# Longest read length: {long}
-# Median read length: {med}
-# Mode read length: {mode}
-# Mode frequency: {mode_freq}
+output_str = """# Input file name:\t{filename}
+# Total reads:\t{reads}
+# Total bases (Mb):\t{mb} 
+# Shortest read length:\t{short}
+# Longest read length:\t{long}
+# Median read length:\t{med}
+# Mode read length:\t{mode}
+# Mode frequency:\t{mode_freq}
 """.format(filename = str(sys.argv[1]).split('/')[-1],
         reads = stat_lst[0],
         mb = "%.2f" % stat_lst[1],

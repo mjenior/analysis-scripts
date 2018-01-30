@@ -20,10 +20,12 @@ with open(sys.argv[2],'r') as input_fasta:
         outfile_name = str(sys.argv[2]).rstrip('fastn') + 'annotated.fasta'
         output_fasta = open(outfile_name, 'w')
 
+        genes = 0
         key_errors = 0
         for line in input_fasta:
 
                 if str(line)[0] == '>':
+                        genes += 1
                         entry = str(line).strip('>').strip()
 
                         try:
@@ -39,5 +41,14 @@ with open(sys.argv[2],'r') as input_fasta:
                 else:
                         output_fasta.write(line)
 
-output_fasta.close()
+        output_fasta.close()
+
+
+print('Fasta name: ' + str(outfile_name))
+
+print('Total putative genes: ' + str(genes))
+print('Unannotated genes: ' + str(key_errors))
+
+success = 100.0 - round(((float(key_errors) / float(genes)) * 100), 2)
+print('Successful annotation: ' + str(success) + '%\n')
 
