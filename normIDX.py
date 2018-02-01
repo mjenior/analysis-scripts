@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# USAGE: normIDX.py input_file ioutput_file 100
+# USAGE: normIDX.py input_file output_file 100
 # Normalizes read abundances to gene and read length
 
 import sys
