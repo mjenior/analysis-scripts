@@ -15,7 +15,7 @@ def read_lengths(fasta):
         all_cnt = 0
         seq = ''
         firstLine = 'placeholder'
-        while firstLine[0] != '>':
+        while firstLine[0] != '>' or firstLine == '\n':
                 firstLine = fasta.readline()
 
         for line in fasta:

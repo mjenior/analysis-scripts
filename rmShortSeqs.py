@@ -8,6 +8,7 @@ min_len = int(sys.argv[2])
 out_fasta = str(sys.argv[1]).rstrip('fastn') + str(min_len) + '.fasta'
 out_fasta = open(out_fasta, 'w')
 
+
 with open(sys.argv[1], 'r') as in_fasta:
 
 	include = 0
