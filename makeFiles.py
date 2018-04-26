@@ -4,9 +4,9 @@
 import sys
 import glob
 
-with open(sys.argv[1], 'w') as outFiles:
-	fastqR1 = glob.glob('*.1.fq')
-	for R1 in fastqR1:
-		entry = str(R1).split('.')[2] + '\t' + R1 + '\t' + R1.replace('.1.','.2.') + '\n'
-		outFiles.write(entry)
+with open(sys.argv[1], 'w') as outFile:
+        fastqR1 = glob.glob('*_R1_*.fastq')
+        for R1 in fastqR1:
+                entry = str(R1).split('_')[0] + '\t' + R1 + '\t' + R1.replace('_R1_','_R2_') + '\n'
+                outFile.write(entry)
 

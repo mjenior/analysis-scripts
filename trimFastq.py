@@ -6,19 +6,30 @@ import sys
 
 outFastq = str(sys.argv[1]).rstrip('fastq') + 'trim.fastq'
 outFastq = open(outFastq, 'w')
-seq_len = int(sys.argv[1])
+#seqLen = int(sys.argv[2])
+seqLen = 250
 
 with open(sys.argv[1], 'r') as inFastq:
+	curr = 1
 	for line in inFastq:
-		if line[0] == '@':
+		if curr == 1:
 			outFastq.write(line)
+			curr += 1
 			continue
-		elif line.strip() == '+':
+		elif curr == 2:
+			line = line[0:seqLen] + '\n'
 			outFastq.write(line)
+			curr += 1
 			continue
-		else:
-			line = line[0:seq_len] + '\n'
+		elif curr == 3:
 			outFastq.write(line)
+			curr += 1
+			continue
+		elif curr == 4:
+			line = line[0:seqLen] + '\n'
+			outFastq.write(line)
+			curr = 1
+			continue
 			
 outFastq.close()
 
