@@ -27,6 +27,7 @@ with open(sys.argv[1], 'r') as fasta:
 		elif line[0] == '>':
 			entry = line.split()
 			entry = '_'.join(entry)
+			entry = entry.replace('>','')
 			entry = [entry]
 			continue
 		else:
@@ -47,4 +48,4 @@ with open(sys.argv[1], 'r') as fasta:
 
 outfile.close()
 
-    
+
