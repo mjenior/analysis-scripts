@@ -5,7 +5,6 @@ This script calculates tetranucleotide frequencies
 import sys
 import itertools
 
-
 nucs = ['A','T','G','C']
 tetras = []
 for curr_tetras in itertools.combinations_with_replacement(nucs, 4):
@@ -26,9 +25,8 @@ with open(sys.argv[1], 'r') as fasta:
 			continue
 		elif line[0] == '>':
 			entry = line.split()
-			entry = '_'.join(entry)
-			entry = entry.replace('>','')
-			entry = [entry]
+			entry = '_'.join(entry).replace('>','') + '\t'
+			outfile.write(entry)
 			continue
 		else:
 			seq = map(''.join,zip(*[line.strip()[i:] for i in range(4)]))
@@ -40,12 +38,9 @@ with open(sys.argv[1], 'r') as fasta:
 
 			for index in tetras:
 				freq = float(curr_freq[index]) / seq_len
-				entry.append(str(freq))
+				freq = str(freq) + '\t'
+				outfile.write(freq)
 
-			entry = '\t'.join(entry) + '\n'
-			outfile.write(entry)
-
+			outfile.write('\n')
 
 outfile.close()
-
-
