@@ -36,11 +36,16 @@ with open(sys.argv[1], 'r') as fasta:
 			for tetra in seq:
 				curr_freq[tetra] += 1
 
-			for index in tetras:
-				freq = float(curr_freq[index]) / seq_len
-				freq = str(freq) + '\t'
-				outfile.write(freq)
-
-			outfile.write('\n')
+			index = 0
+			for tetra in tetras:
+				freq = str(float(curr_freq[tetra]) / seq_len)
+				index += 1
+				if index == len(tetras):
+					index = 0
+					freq = freq + '\n'
+					outfile.write(freq)
+				else:
+					freq = freq + '\t'
+					outfile.write(freq)
 
 outfile.close()
