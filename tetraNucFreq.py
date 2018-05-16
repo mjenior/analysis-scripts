@@ -18,12 +18,16 @@ entry = ['seq_name'] + tetras
 entry = '\t'.join(entry) + '\n'
 outfile.write(entry)
 
+progress = 0
 with open(sys.argv[1], 'r') as fasta:
 
 	for line in fasta:
 		if line == '\n':
 			continue
 		elif line[0] == '>':
+			progress += 1
+			if progress % 100 == 0:
+				print(progress)
 			entry = line.split()
 			entry = '_'.join(entry).replace('>','') + '\t'
 			outfile.write(entry)
