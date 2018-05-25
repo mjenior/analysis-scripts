@@ -146,7 +146,8 @@ Contigs<1kb:    {short_contigs}
 Contigs>1kb:    {seqs_1k}
 Contigs>5kb:    {seqs_5k}
 Contigs>10kb:   {seqs_10k}
-""".format(filename = str(sys.argv[1]).split('/')[-1],  
+
+###################################""".format(filename = str(sys.argv[1]).split('/')[-1],  
         total_contigs = stat_list[0], 
         total_mb = "%.2f" % stat_list[1], 
         n50 = stat_list[2],

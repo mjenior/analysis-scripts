@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-USAGE: python pichFastq.py fastq sub_level
+USAGE: python pickFastq.py fastq sub_level
 Returns a fastq file with the user provided number of subsampled reads
 '''
 import sys
@@ -16,7 +16,9 @@ with open(sys.argv[1], 'r') as inFastq:
 	for line in inFastq:
 		current += 1
 		outFastq.write(line)
+
 		if current == subLvl:
 			break
 
 outFastq.close()
+
