@@ -24,9 +24,9 @@ with open(sys.argv[1], 'r') as checkm:
 			continue
 		elif int(line[2]) <= 5449:
 			continue
-		elif float(line[11]) <= 40.0:
+		elif float(line[11]) >= 40.0:
 			continue
-		elif float(line[12]) >= 33.333:
+		elif float(line[12]) <= 33.333:
 			continue
 		else:
 			print('test')
