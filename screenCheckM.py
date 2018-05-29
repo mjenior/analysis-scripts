@@ -11,7 +11,9 @@ with open(sys.argv[1], 'r') as checkm:
 
 	for line in checkm:
 		line = line.split()
-		if line[0] == 'Bin_Id':
+		if len(line) == 0:
+			continue
+		elif line[0] == 'Bin_Id':
 			continue
 		elif line[1].split('(')[0] == 'root':
 			continue
