@@ -7,7 +7,8 @@ import os
 
 # Create and navigate to new output directory
 directory = str(os.getcwd()) + '/screened_bins'
-os.makedirs(directory)
+if not os.path.exists(directory):
+	os.makedirs(directory)
 
 with open(sys.argv[1], 'r') as checkm:
 
@@ -29,6 +30,6 @@ with open(sys.argv[1], 'r') as checkm:
 			continue
 		else:
 			prevName = line[0] + '.fa'
-			newName = 'screened_bins/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
+			newName = directory + '/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
 			os.rename(prevName, newName)
 
