@@ -29,6 +29,7 @@ with open(sys.argv[1], 'r') as checkm:
 		elif float(line[12]) >= 33.333:
 			continue
 		else:
+			print('test')
 			prevName = line[0] + '.fa'
 			newName = directory + '/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
 			os.rename(prevName, newName)
