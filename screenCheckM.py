@@ -27,7 +27,7 @@ with open(sys.argv[1], 'r') as checkm:
 			print('test4')
 			continue
 		elif int(line[2]) >= 5449:
-			print('test6')
+			print(int(line[2]))
 			continue
 		elif float(line[11]) >= 40.0:
 			print('test6')
