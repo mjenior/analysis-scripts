@@ -13,7 +13,6 @@ if not os.path.exists(directory):
 with open(sys.argv[1], 'r') as checkm:
 
 	accepted = []
-	print('')
 	for line in checkm:
 		line = line.split()
 		# Last line
@@ -47,7 +46,8 @@ with open(sys.argv[1], 'r') as checkm:
 			newName = line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
 			entry = prevName + ' --> ' + newName
 			accepted.append(entry)
-			newName = directory + '/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
+			
+			newName = directory + '/' + newName
 			os.rename(prevName, newName)
 
 print('\nAccepted:')
