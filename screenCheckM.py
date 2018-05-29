@@ -27,16 +27,16 @@ with open(sys.argv[1], 'r') as checkm:
 			print('test4')
 			continue
 		elif int(line[2]) >= 5449:
-			print(int(line[2]))
-			continue
-		elif float(line[11]) >= 40.0:
 			print('test6')
 			continue
-		elif float(line[12]) <= 33.333:
+		elif float(line[11]) >= 40.0:
 			print('test7')
 			continue
-		else:
+		elif float(line[12]) <= 33.333:
 			print('test8')
+			continue
+		else:
+			print('test9')
 			prevName = line[0] + '.fa'
 			newName = directory + '/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
 			os.rename(prevName, newName)
