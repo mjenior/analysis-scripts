@@ -14,25 +14,32 @@ with open(sys.argv[1], 'r') as checkm:
 
 	for line in checkm:
 		line = line.split()
+		# Last line
 		if len(line) == 0:
 			print('test1')
 			continue
+		# Header
 		elif line[0] == 'Bin_Id':
 			print('test2')
 			continue
+		# Not able to classify
 		elif line[1].split('(')[0] == 'root':
 			print('test3')
 			continue
+		# Only kingdom level classification
 		elif line[1].split('__')[0] == 'k':
 			print('test4')
 			continue
-		elif int(line[2]) >= 5449:
+		# Number of genomes hit against
+		elif int(line[2]) >= 5000:
 			print('test6')
 			continue
-		elif float(line[11]) >= 40.0:
+		# Completeness
+		elif float(line[11]) <= 40.0:
 			print('test7')
 			continue
-		elif float(line[12]) <= 33.333:
+		# Contamination
+		elif float(line[12]) >= 33.333:
 			print('test8')
 			continue
 		else:
