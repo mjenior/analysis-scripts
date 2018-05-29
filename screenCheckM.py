@@ -5,7 +5,9 @@ Checks quality of genome bins and collects most useable OGUs
 import sys
 import os
 
-os.mkdir('screened_bins')
+# Create and navigate to new output directory
+directory = str(os.getcwd()) + '/screened_bins'
+os.makedirs(directory)
 
 with open(sys.argv[1], 'r') as checkm:
 
