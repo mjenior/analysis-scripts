@@ -22,7 +22,7 @@ with open(sys.argv[1], 'r') as checkm:
 			continue
 		elif line[1].split('__')[0] == 'k':
 			continue
-		elif int(line[2]) <= 5449:
+		elif int(line[2]) >= 5449:
 			continue
 		elif float(line[11]) >= 40.0:
 			continue
