@@ -12,39 +12,44 @@ if not os.path.exists(directory):
 
 with open(sys.argv[1], 'r') as checkm:
 
+	accepted = []
+	print('')
 	for line in checkm:
 		line = line.split()
 		# Last line
 		if len(line) == 0:
-			print('test1')
 			continue
 		# Header
 		elif line[0] == 'Bin_Id':
-			print('test2')
 			continue
 		# Not able to classify
 		elif line[1].split('(')[0] == 'root':
-			print('test3')
+			print('Rejected: ' + line[0])
 			continue
 		# Only kingdom level classification
 		elif line[1].split('__')[0] == 'k':
-			print('test4')
+			print('Rejected: ' + line[0])
 			continue
 		# Number of genomes hit against
 		elif int(line[2]) >= 5000:
-			print('test6')
+			print('Rejected: ' + line[0])
 			continue
 		# Completeness
 		elif float(line[11]) <= 40.0:
-			print('test7')
+			print('Rejected: ' + line[0])
 			continue
 		# Contamination
 		elif float(line[12]) >= 33.333:
-			print('test8')
+			print('Rejected: ' + line[0])
 			continue
 		else:
-			print('test9')
 			prevName = line[0] + '.fa'
+			newName = line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
+			entry = prevName + ' --> ' + newName
+			accepted.append(entry)
 			newName = directory + '/' + line[1].split('__')[1] + '.' + str(line[11]) + '.contigs.fasta'
 			os.rename(prevName, newName)
 
+print('\nAccepted:')
+for index in accepted:
+	print(index)
