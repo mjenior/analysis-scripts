@@ -3,8 +3,9 @@
 Checks quality of genome bins and collects most useable OGUs
 '''
 import sys
-import os
 import argparse
+import glob
+from shutil import copyfile
 
 # User defined arguments
 parser = argparse.ArgumentParser(description='Generate bipartite metabolic models and calculates importance of substrate nodes based on gene expression.')
@@ -15,7 +16,7 @@ args = parser.parse_args()
 
 # Assign variables
 outliers = open(str(args.outlier_table), 'r')
-fasta_ext = str(args.ext)
+fasta_ext = '.' + str(args.ext)
 bin_dir = str(os.getcwd()) + '/' + str(args.bins)
 os.chdir(bin_dir)
 
@@ -38,7 +39,7 @@ total_exclude = 0
 
 for index in bin_list:
 	bin_name = index + '.' + fasta_ext
-	new_bin_name = index + '.pruned.' + fasta_ext
+	new_bin_name = index + '.pruned' + fasta_ext
 
 	new_bin = open(new_bin_name, 'w')
 	with open(bin_name, 'r') as fasta:
@@ -69,4 +70,16 @@ perc_exclude = (float(total_exclude) / float(total_include)) * 100.0
 perc_exclude = round(perc_exclude, 3)
 print('Percent exclusion: ' + str(perc_exclude) + '%\n')
 
+# Simply rename a copy of those fastas without outliers for continuity
+fastas = '*' + fasta_ext
+fastas = glob.glob(fastas)
+unchanged = []
+for x in range(0,len(fastas)):
+	current = fastas[x].replace(fasta_ext, '')
+	current = current.replace('.pruned', '')
+	if not current in bin_list:
+		src = current + fasta_ext
+		dst = current + '.pruned' + fasta_ext
+		print(src + ' ---> ' + dst)
+		#copyfile(src, dst)
 
