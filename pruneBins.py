@@ -15,7 +15,7 @@ parser.add_argument('--bins', default='bins/', help='Directory for metagenomic c
 args = parser.parse_args()
 
 # Assign variables
-outliers = open(str(outlier_table), 'r')
+outliers = open(str(args.outlier_table), 'r')
 fasta_ext = str(args.ext)
 bin_dir = str(os.getcwd()) + '/' + str(args.bins)
 os.chdir(bin_dir)
