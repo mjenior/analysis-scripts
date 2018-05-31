@@ -29,7 +29,7 @@ for line in outliers:
 	contig = line.split()[1]
 	if not contig_bin in outlier_dict.keys():
 		outlier_dict[contig_bin] = [contig]
-		bin_list.append(contig)
+		bin_list.append(contig_bin)
 	else:
 		outlier_dict[contig_bin].append(contig)
 outliers.close()
