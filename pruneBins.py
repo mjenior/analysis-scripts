@@ -81,9 +81,6 @@ for current in fastas:
 	if not current in bin_list:
 		src = current + fasta_ext
 		dst = current + '.pruned.fna'
-		print(src + ' ---> ' + dst)
-		#copyfile(src, dst)
-	else:
-		print(current)
+		copyfile(src, dst)
 
 
