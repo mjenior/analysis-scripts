@@ -46,7 +46,6 @@ for index in bin_list:
 
 		excluding = 0
 		exclude = outlier_dict[index]
-		print(exclude)
 		for line in fasta:
 			if line[0] == '>':
 				seq_name = line.strip().replace('>','')
