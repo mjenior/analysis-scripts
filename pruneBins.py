@@ -21,7 +21,7 @@ bin_dir = str(os.getcwd()) + '/' + str(args.bins)
 os.chdir(bin_dir)
 
 outlier_dict = {}
-bin_list = 
+bin_list = []
 for line in outliers:
 	if line[0:6] == 'Bin Id':
 		continue
