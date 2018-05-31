@@ -5,6 +5,7 @@ Checks quality of genome bins and collects most useable OGUs
 import sys
 import argparse
 import glob
+import os
 from shutil import copyfile
 
 # User defined arguments
@@ -39,7 +40,7 @@ total_exclude = 0
 
 for index in bin_list:
 	bin_name = index + '.' + fasta_ext
-	new_bin_name = index + '.pruned' + fasta_ext
+	new_bin_name = index + '.pruned.fna'
 
 	new_bin = open(new_bin_name, 'w')
 	with open(bin_name, 'r') as fasta:
@@ -74,12 +75,15 @@ print('Percent exclusion: ' + str(perc_exclude) + '%\n')
 fastas = '*' + fasta_ext
 fastas = glob.glob(fastas)
 unchanged = []
-for x in range(0,len(fastas)):
-	current = fastas[x].replace(fasta_ext, '')
-	current = current.replace('.pruned', '')
+for current in fastas:
+	current = current.replace(fasta_ext, '')
+	current = current.replace('.pruned.fna', '')
 	if not current in bin_list:
 		src = current + fasta_ext
-		dst = current + '.pruned' + fasta_ext
+		dst = current + '.pruned.fna'
 		print(src + ' ---> ' + dst)
 		#copyfile(src, dst)
+	else:
+		print(current)
+
 
