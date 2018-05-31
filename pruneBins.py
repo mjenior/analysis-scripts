@@ -9,7 +9,7 @@ import argparse
 
 # User defined arguments
 parser = argparse.ArgumentParser(description='Generate bipartite metabolic models and calculates importance of substrate nodes based on gene expression.')
-parser.add_argument('input_file')
+parser.add_argument('outlier_table')
 parser.add_argument('--ext', default='fa', help='Bin fasta file extension')
 parser.add_argument('--bins', default='bins/', help='Directory for metagenomic contig bins')
 args = parser.parse_args()
