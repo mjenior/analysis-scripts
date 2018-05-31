@@ -5,7 +5,6 @@ Checks quality of genome bins and collects most useable OGUs
 import sys
 import os
 import argparse
-import gzip
 
 # User defined arguments
 parser = argparse.ArgumentParser(description='Generate bipartite metabolic models and calculates importance of substrate nodes based on gene expression.')
@@ -63,11 +62,11 @@ for index in bin_list:
 
 	new_bin.close()
 
-print('Contigs excluded: ' + str(total_exclude))
+print('\nContigs excluded: ' + str(total_exclude))
 print('Contigs included: ' + str(total_include))
 
 perc_exclude = (float(total_exclude) / float(total_include)) * 100.0
-perc_exclude = round(perc_exclude, 4)
-print('Percent exclusion: ' + str(perc_exclude) + '%')
+perc_exclude = round(perc_exclude, 3)
+print('Percent exclusion: ' + str(perc_exclude) + '%\n')
 
 
