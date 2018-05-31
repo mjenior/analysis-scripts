@@ -39,7 +39,7 @@ total_include = 0
 total_exclude = 0
 
 for index in bin_list:
-	bin_name = index + '.' + fasta_ext
+	bin_name = index + fasta_ext
 	new_bin_name = index + '.pruned.fna'
 
 	new_bin = open(new_bin_name, 'w')
