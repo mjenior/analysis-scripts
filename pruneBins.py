@@ -16,9 +16,10 @@ parser.add_argument('--bins', default='bins/', help='Directory for metagenomic c
 args = parser.parse_args()
 
 # Assign variables
-outliers = str(os.getcwd()) + '/' + open(str(args.outlier_table), 'r')
+curr_wd = str(os.getcwd())
+outliers = curr_wd + '/' + str(args.outlier_table)
 fasta_ext = '.' + str(args.ext)
-bin_dir = str(os.getcwd()) + '/' + str(args.bins)
+bin_dir = curr_wd + '/' + str(args.bins)
 os.chdir(bin_dir)
 
 # Create dictionary of bin names with contig outliers in each
@@ -34,12 +35,12 @@ for line in outliers:
 		bin_list.append(contig_bin)
 	else:
 		outlier_dict[contig_bin].append(contig)
-outliers.close()
 
-total_include = 0
-total_exclude = 0
+
 
 # Read bin fasta with outliers and write them to new files, omitting outliers
+total_include = 0
+total_exclude = 0
 for index in bin_list:
 	bin_name = index + fasta_ext
 	new_bin_name = index + '.pruned.fna'
