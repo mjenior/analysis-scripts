@@ -66,8 +66,8 @@ for index in bin_list:
 print('Contigs excluded: ' + str(total_exclude))
 print('Contigs included: ' + str(total_include))
 
-perc_exclude = (total_exclude / total_include) * 100
-perc_exclude = round(perc_exclude, 5)
+perc_exclude = (float(total_exclude) / float(total_include)) * 100.0
+perc_exclude = round(perc_exclude, 4)
 print('Percent exclusion: ' + str(perc_exclude) + '%')
 
 
