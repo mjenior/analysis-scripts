@@ -16,9 +16,9 @@ parser.add_argument('--bins', default='bins/', help='Directory for metagenomic c
 args = parser.parse_args()
 
 # Assign variables
-curr_wd = str(os.getcwd())
-outliers = curr_wd + '/' + str(args.outlier_table)
+outliers = str(args.outlier_table)
 fasta_ext = '.' + str(args.ext)
+curr_wd = str(os.getcwd())
 if str(args.bins) == './':
 	bin_dir = curr_wd
 else:
@@ -29,7 +29,7 @@ else:
 outlier_dict = {}
 bin_list = []
 for line in outliers:
-	if line[0:6] == 'Bin Id':
+	if line[0:6] == 'Bin Id' or line == '\n':
 		continue
 	contig_bin = line.split()[0]
 	contig = line.split()[1]
@@ -92,3 +92,5 @@ for current in fastas:
 		print(src + ' --> ' + dst)
 
 print('')
+if curr_wd != bin_dir:
+	os.chdir(curr_wd)
