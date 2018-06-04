@@ -16,7 +16,6 @@ parser.add_argument('--bins', default='bins/', help='Directory for metagenomic c
 args = parser.parse_args()
 
 # Assign variables
-outliers = str(args.outlier_table)
 fasta_ext = '.' + str(args.ext)
 curr_wd = str(os.getcwd())
 if str(args.bins) == './':
@@ -28,19 +27,17 @@ else:
 # Create dictionary of bin names with contig outliers in each
 outlier_dict = {}
 bin_list = []
-for line in outliers:
-	print(line)
-	if line[0:6] == 'Bin Id' or line == '\n':
-		continue
-
-	contig_bin = line.split()[0]
-	contig = line.split()[1]
-	if not contig_bin in outlier_dict.keys():
-		outlier_dict[contig_bin] = [contig]
-		bin_list.append(contig_bin)
-	else:
-		outlier_dict[contig_bin].append(contig)
-
+with open(str(args.outlier_table), 'r') as outliers:
+	for line in outliers:
+		if line[0:6] == 'Bin Id' or line == '\n':
+			continue
+		contig_bin = line.split()[0]
+		contig = line.split()[1]
+		if not contig_bin in outlier_dict.keys():
+			outlier_dict[contig_bin] = [contig]
+			bin_list.append(contig_bin)
+		else:
+			outlier_dict[contig_bin].append(contig)
 
 
 # Read bin fasta with outliers and write them to new files, omitting outliers
