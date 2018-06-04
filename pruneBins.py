@@ -19,8 +19,11 @@ args = parser.parse_args()
 curr_wd = str(os.getcwd())
 outliers = curr_wd + '/' + str(args.outlier_table)
 fasta_ext = '.' + str(args.ext)
-bin_dir = curr_wd + '/' + str(args.bins)
-os.chdir(bin_dir)
+if str(args.bins) == './':
+	bin_dir = curr_wd
+else:
+	bin_dir = curr_wd + '/' + str(args.bins)
+	os.chdir(bin_dir)
 
 # Create dictionary of bin names with contig outliers in each
 outlier_dict = {}
