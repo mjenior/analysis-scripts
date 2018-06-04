@@ -31,6 +31,7 @@ bin_list = []
 for line in outliers:
 	if line[0:6] == 'Bin Id' or line == '\n':
 		continue
+	print(line)
 	contig_bin = line.split()[0]
 	contig = line.split()[1]
 	if not contig_bin in outlier_dict.keys():
