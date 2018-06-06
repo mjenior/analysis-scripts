@@ -1,5 +1,5 @@
 #!/usr/bin/python
-'''USAGE: pruneBins.py outlier_table
+'''USAGE: pruneBins.py outlier_table --ext fasta --bins bin_directory/
 Checks quality of genome bins and collects most useable OGUs
 '''
 import sys
