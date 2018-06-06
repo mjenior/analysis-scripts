@@ -140,7 +140,7 @@ current_seq, contig_number, read_number = createSeqs(contig_number, current_seq,
 #-------------------------------------------------------------------#
 
 # Close output files
-print('')
+print('\nDone.\n')
 contigs_file.close()
 reads_file.close()
 
