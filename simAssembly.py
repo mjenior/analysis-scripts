@@ -15,7 +15,7 @@ def addContigGaps(sequence):
 	lagging = random.randint(1, 20)
 	sequence = sequence[:-lagging]
 
-	sequence = sequence + '\n\n'
+	sequence = sequence + '\n'
 
 	return(sequence)
 
@@ -65,7 +65,7 @@ def generateRead(contig, read_len):
 	start_pos = random.choice(range(0, last_avail))
 	end_pos = start_pos + read_len
 	read = contig[start_pos:end_pos]
-	read = read + '\n\n'
+	read = read + '\n'
 	return read
 
 # Brings all functions together and does the work
