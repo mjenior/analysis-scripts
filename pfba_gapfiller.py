@@ -80,7 +80,7 @@ def pfba_gapfill(model, reaction_bag, obj=None, obj_lb=10., obj_constraint=False
         
         # Set objective in universal if told by user
         # Made constraint as fraction of minimum in next step
-        if obj_constraint == True:
+        if obj_constraint:
             universal.add_reactions([model.reactions.get_by_id(obj)])
             universal.objective = obj
             orig_rxn_ids.remove(obj)
@@ -92,18 +92,22 @@ def pfba_gapfill(model, reaction_bag, obj=None, obj_lb=10., obj_constraint=False
             
         # Add pFBA to universal model and add model reactions
         add_pfba(universal)
-        universal = copy.deepcopy(universal) # reset solver
+        #universal = copy.deepcopy(universal) # reset solver
         universal.add_reactions(orig_rxns)
         
         # If previous objective not set as constraint, set minimum lower bound
-        if obj_constraint == False: 
+        if not obj_constraint: 
             universal.reactions.get_by_id(obj).lower_bound = obj_lb
     
         # Set metabolic tasks that must carry flux in gapfilled solution
         if tasks != None:
-            for task in tasks:                    
-                universal.reactions.get_by_id(task).lower_bound = task_lb
-                
+            for task in tasks:
+                try:                
+                    universal.reactions.get_by_id(task).lower_bound = task_lb
+                except:
+                    print(task + 'not found in model. Ignoring.')
+                    continue
+
         # Run FBA and save solution
         print('Optimizing model with combined reactions...')
         solution = universal.optimize()
@@ -136,7 +140,7 @@ def pfba_gapfill(model, reaction_bag, obj=None, obj_lb=10., obj_constraint=False
             continue
     
     # Get reactions and metabolites to be added to the model
-    print('Retrieving reactions and metabolites needed for gapfilling...')
+    print('Gapfilling model...')
     new_rxns = copy.deepcopy([reaction_bag.reactions.get_by_id(rxn) for rxn in new_rxn_ids])
     new_cpd_ids = set()
     for rxn in new_rxns: new_cpd_ids |= set([str(x.id) for x in list(rxn.metabolites)])
@@ -144,7 +148,6 @@ def pfba_gapfill(model, reaction_bag, obj=None, obj_lb=10., obj_constraint=False
     new_cpds = copy.deepcopy([reaction_bag.metabolites.get_by_id(cpd) for cpd in new_cpd_ids])
     
     # Copy model and gapfill 
-    print('Gapfilling model...')
     new_model = copy.deepcopy(model)
     new_model.add_metabolites(new_cpds)
     new_model.add_reactions(new_rxns)
