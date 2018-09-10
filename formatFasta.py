@@ -4,13 +4,14 @@ Reformats fasta files to be uniform
 '''
 import sys
 
-outFasta = str(sys.argv[1]).rstrip('fastnx') + 'format.fasta'
+suffix = str(sys.argv[1]).split('.')[-1]
+outFasta = str(sys.argv[1]).rstrip('fastnx') + 'format.' + suffix
 outFasta = open(outFasta, 'w')
 
 with open(sys.argv[1], 'r') as inFasta:
 
 	firstLine = inFasta.readline()
-	firstLine = firstLine.replace(' ', '_').replace('|', '__').replace(',', '_')
+	firstLine = firstLine.replace(' ', '_').replace('|', '__').replace(',', '.')
 	outFasta.write(firstLine)
 
 	seq = ''
@@ -21,7 +22,7 @@ with open(sys.argv[1], 'r') as inFasta:
 			outFasta.write(seq)
 			seq = ''
 			
-			line = line.replace(' ', '_').replace('|', '__').replace(',', '_')
+			line = line.replace(' ', '_').replace('|', '__').replace(',', '.')
 			outFasta.write(line)
 			continue
 		else:
