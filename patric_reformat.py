@@ -11,32 +11,53 @@ cd630_genes = set(['272563.8.peg.1522','272563.8.peg.1925','272563.8.peg.3384','
 	'272563.8.peg.3732','272563.8.peg.2981','272563.8.peg.2980','272563.8.peg.2452','272563.8.peg.2456','272563.8.peg.3439','272563.8.peg.1810','272563.8.peg.466','272563.8.peg.1525','272563.8.peg.1923','272563.8.peg.2438','272563.8.peg.3624','272563.8.peg.2439','272563.8.peg.3625','272563.8.peg.3768','272563.8.peg.1815','272563.8.peg.3769','272563.8.peg.1266','272563.8.peg.1046','272563.8.peg.3464','272563.8.peg.42','272563.8.peg.1407','272563.8.peg.243','272563.8.peg.3272','272563.8.peg.2829','272563.8.peg.2215','272563.8.peg.206','272563.8.peg.135','272563.8.peg.3602','272563.8.peg.929','272563.8.peg.1881','272563.8.peg.2716','272563.8.peg.3153','272563.8.peg.1626','272563.8.peg.3394','272563.8.peg.3392','272563.8.peg.3396','272563.8.peg.3393','272563.8.peg.294','272563.8.peg.3116','272563.8.peg.866','272563.8.peg.2777','272563.8.peg.924','272563.8.peg.1831','272563.8.peg.818','272563.8.peg.1399','272563.8.peg.3130','272563.8.peg.2719','272563.8.peg.2638','272563.8.peg.831','272563.8.peg.2470','272563.8.peg.1768','272563.8.peg.3177','272563.8.peg.2316','272563.8.peg.2139','272563.8.peg.1586','272563.8.peg.1457','272563.8.peg.1458','272563.8.peg.2521','272563.8.peg.928','272563.8.peg.3718','272563.8.peg.2135','272563.8.peg.3225','272563.8.peg.3012','272563.8.peg.153','272563.8.peg.901','272563.8.peg.3820','272563.8.peg.3192','272563.8.peg.3825','272563.8.peg.3224','272563.8.peg.3009','272563.8.peg.151','272563.8.peg.3822','272563.8.peg.902','272563.8.peg.3823','272563.8.peg.3226','272563.8.peg.152','272563.8.peg.3013','272563.8.peg.1679','272563.8.peg.795','272563.8.peg.3436','272563.8.peg.1176','272563.8.peg.2227','272563.8.peg.1769','272563.8.peg.2471','CD630_12590','CD630_07500','CD630_10040','CD630_10030','CD630_23710','CD630_01790','CD630_12250',
 	'CD630_24170','CD630_24180','CD630_10100','CD630_22770','CD630_00450','CD630_35150','CD630_30140','CD630_30150','CD630_30130','K07406','CD630_08760','CD630_08730','CD630_06820','K12658','CD630_17760','SAMEA3375161_04237','CD630_01120','CD630_21990','CD630_21991','CD630_01540','CD630_01530','CD630_23800','CD630_32440','CD630_23540','CD630_03940','CD630_03980','CD630_03970','CD630_03950','CD630_03960','K05709','K05708','K00529','CD630_01550','CD630_21960','CD630_23420','CD630_23410','CD630_10540','CD630_23390','CD630_26550','CD630_02440','CD630_26510'])
 
-​suffix = str(sys.argv[1]).split('.')[-1]
+suffix = str(sys.argv[1]).split('.')[-1]
 outFasta = str(sys.argv[1]).rstrip('fastnx') + 'format.' + suffix
 outFasta = open(outFasta, 'w')
 
 included = 0
+written = 0
 with open(sys.argv[1], 'r') as inFasta:
 
 	firstLine = inFasta.readline().split('|')
-	patric_id = firstLine[0]
-	gene = firstLine[4].split('[')[0].strip().replace(' ','_')
+	patric_id = firstLine[1]
+	gene = firstLine[-2].split('[')[0].strip().replace(' ', '_')
+
 	if patric_id in cd630_genes:
 		included = 1
-		entry = '>' + patric_id + '|' + gene
+		entry = '>' + patric_id + '|' + gene + '\n'
 		outFasta.write(entry)
+		written += 1
 
 	sequence = ''
 	for line in inFasta:
 
-		if line[0] != '>' and included == 1:
+		if line.strip() == '':
+			continue
+
+		elif line[0] != '>' and included == 1:
 			sequence += line.strip().upper()
-			included = 0
-		else:
+			continue
+
+		elif line[0] == '>':
+			if included == 1:
+				sequence += '\n\n'
+				outFasta.write(sequence)
+				sequence = ''
+				included = 0
+
+			line = line.split('|')
+			patric_id = line[1]
+			gene = line[-2].split('[')[0].strip().replace(' ', '_')
+		
 			if patric_id in cd630_genes:
 				included = 1
-				entry = '>' + patric_id + '|' + gene
+				entry = '>' + patric_id + '|' + gene + '\n'
 				outFasta.write(entry)
+				written += 1
 
 
 outFasta.close()
+
+print('Sequences included in new fasta: ' + str(written))
+
