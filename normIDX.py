@@ -9,7 +9,7 @@ with open(sys.argv[1], 'r') as idxStats:
         outFile = str(sys.argv[1]).rstrip('cstvx') + 'norm.tsv'
         outFile = open(outFile, 'w')
         #outFile = open(sys.argv[2], 'w')
-        outFile.write('contigName\tcontigLen\tnormDepth\n')
+        outFile.write('target_name\ttarget_length\tnormalized_abundance\n')
 
         readLen = float(sys.argv[2])
         #readLen = float(sys.argv[3])

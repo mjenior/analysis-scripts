@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
-'''USAGE: fasta_stats.py seqFile
-This script calculates various statistics about the provided fasta or fastq file.
+'''USAGE: contigStats.py seqFile
+This script calculates various statistics about the provided fasta file.
 '''
 import sys
 import math
