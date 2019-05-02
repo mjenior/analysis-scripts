@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Simulates assembled contigs and sequencing reads using full genome refereces
+# Simulates assembled contigs using a full genome reference
 # simAssembly.py genome.fasta 
 
 import sys
@@ -10,20 +10,13 @@ import random
 def addContigGaps(sequence):
 
 	leading = random.randint(1, 20)
-	sequence = sequence[leading:]
-
 	lagging = random.randint(1, 20)
-	sequence = sequence[:-lagging]
-
-	sequence = sequence + '\n'
+	sequence = sequence[leading:-lagging] + '\n'
 
 	return(sequence)
 
 # Select a contig length based on a discrete probability distribution
-def pickContigLength():
-
-	minimum = 250
-	maximum = 50000
+def pickContigLength(minimum = 1500, maximum = 90000):
 
 	interval = int(round((maximum - minimum) / 10))
 	prob = random.choice(range(0,100))
@@ -59,88 +52,53 @@ def pickContigLength():
 
 	return(select_len)
 
-# Generate a single read in a random place within a contig
-def generateRead(contig, read_len):
-	last_avail = len(contig) - read_len - 1
-	start_pos = random.choice(range(0, last_avail))
-	end_pos = start_pos + read_len
-	read = contig[start_pos:end_pos]
-	read = read + '\n'
-	return read
-
-# Brings all functions together and does the work
-def createSeqs(current_contig, current_seq, current_len, contigs_file, reads_file, read_count):
-
-	seq_depth = 50
-	read_length = 150
-
-	current_contig += 1
-	if current_contig % 10 == 0:
-		print(current_contig)
-
-	current_contig_name = '>SimContig_' + str(current_contig) + '\n'
-	contigs_file.write(current_contig_name)
-
-	output_seq = current_seq[:current_len]
-	output_seq = addContigGaps(output_seq) # Introduce artificial gaps in the assembly
-	contigs_file.write(output_seq)
-
-	current_seq = current_seq[current_len:]
-
-	num_reads = (seq_depth * len(output_seq)) / read_length
-	num_reads = int(round(num_reads))
-
-	for x in range(0, num_reads):
-		read_count += 1
-		current_read_name = '>SimRead_' + str(read_count) + '\n'
-		reads_file.write(current_read_name)
-		current_read = generateRead(output_seq, read_length)
-		reads_file.write(current_read)
-
-	return(current_seq, current_contig, read_count)
-
-#-------------------------------------------------------------------#
 
 # Create output contig and read files
 fasta_name = str(sys.argv[1]).rstrip('fastn')
-contigs_file = fasta_name + 'contigs.fasta'
-print('\nWriting simulated contigs to ' + contigs_file)
+contigs_file = fasta_name + 'sim_contigs.fasta'
 contigs_file = open(contigs_file, 'w')
 
-reads_file = fasta_name + 'reads.fasta'
-print('Writing simulated reads to ' + reads_file + '\n')
-reads_file = open(reads_file, 'w')
+#min_len = int(sys.argv[2])
+min_len = 1500
+#max_len = int(sys.argv[3])
+max_len = 35000
 
 #-------------------------------------------------------------------#
 
 # Create the simulated assembly and read data
 with open(sys.argv[1], 'r') as genome_fasta:
 
-	contig_number = 0
-	read_number = 0
+	contig_count = 0
 	current_seq = ''
+	current_len = pickContigLength(min_len, max_len)
 
-	current_len = pickContigLength()
 	for line in genome_fasta:
-
-		if line == '\n' or line[0] == '>':
-			continue
-
+		if line == '\n' or line[0] == '>': continue
+		
 		current_seq += line.strip()
-		if len(current_seq) >= current_len:
-			current_seq, contig_number, read_number = createSeqs(contig_number, current_seq, current_len, contigs_file, reads_file, read_number)
-			current_len = pickContigLength()
+		while len(current_seq) > current_len:
+			contig_count += 1
 
-while len(current_seq) > current_len:
-	current_seq, contig_number, read_number = createSeqs(contig_number, current_seq, current_len, contigs_file, reads_file, read_number)
-	current_len = pickContigLength()
+			current_contig_name = '>sim_contig_' + str(contig_count) + '\n'
+			contigs_file.write(current_contig_name)
 
-current_seq, contig_number, read_number = createSeqs(contig_number, current_seq, current_len, contigs_file, reads_file, read_number)
+			output_seq = current_seq[:current_len]
+			output_seq = addContigGaps(output_seq) # Introduce artificial gaps in the assembly
+			contigs_file.write(output_seq)
 
-#-------------------------------------------------------------------#
+			current_seq = current_seq[current_len:]
+			current_len = pickContigLength(min_len, max_len)
 
-# Close output files
-print('\nDone.\n')
+		if len(current_seq) > min_len:
+			contig_count += 1
+
+			current_contig_name = '>sim_contig_' + str(contig_count) + '\n'
+			contigs_file.write(current_contig_name)
+
+			output_seq = current_seq[:current_len]
+			output_seq = addContigGaps(output_seq) # Introduce artificial gaps in the assembly
+			contigs_file.write(output_seq)
+
+
+# Close output file
 contigs_file.close()
-reads_file.close()
-
