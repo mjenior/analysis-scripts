@@ -5,16 +5,26 @@ Simulates short read sequencing efforts for a given fasta file, most likely asse
 import sys
 import math
 import random
+import argparse
 
-# Define other variables
-#read_len = int(sys.argv[2])
-read_len = 250
-#coverage = int(sys.argv[3])
-coverage = 500
+# Define variables
+parser = argparse.ArgumentParser(description='Generate bipartite metabolic models and calculates importance of substrate nodes based on gene expression.')
+parser.add_argument('fasta')
+parser.add_argument('--len', default=250, help='Length of reads to be simullated')
+parser.add_argument('--cov', default=500, help='Average depth of sequencing per contig')
+parser.add_argument('--pair', default=False, help='Defines if you want paired-end of single ends simulated reads')
+args = parser.parse_args()
+
+# Assign variables
+fasta = str(args.fasta)
+read_len = int(args.len)
+coverage = int(args.cov)
+paired = args.pair
 
 # Generate output fasta file
-output_fasta = str(sys.argv[1]).split('/')[-1].split('.fasta')[0] + '.' + str(read_len) + 'bp.' + str(coverage) + 'X.simreads.fasta'
-reads = open(output_fasta, 'w')
+if paired == True: pair_lab = 'paired'
+else: pair_lab = 'single'
+output_fasta = str(sys.argv[1]).split('/')[-1].split('.fasta')[0] + '.' + str(read_len) + 'bp.' + str(coverage) + 'X.' + pair_lab + '.simreads.fasta'
 
 # Identify longest sequence to correct coverage value
 with open(sys.argv[1], 'r') as fasta:
@@ -29,6 +39,7 @@ with open(sys.argv[1], 'r') as fasta:
 depth = (max_len * coverage) / read_len
 
 # Generate simulated reads
+reads = open(output_fasta, 'w')
 with open(sys.argv[1], 'r') as contigs:
 
         read_count = 1
