@@ -1,53 +1,105 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''USAGE: simReads.py contig_fasta read_length depth
 Simulates short read sequencing efforts for a given fasta file, most likely assembled contigs.
 '''
 import sys
 import math
 import random
+import argparse
 
-# Define other variables
-#read_len = int(sys.argv[2])
-read_len = 250
-#coverage = int(sys.argv[3])
-coverage = 500
+# User defined arguments
+parser = argparse.ArgumentParser(description='Generate a simulatated sequencing effort for a given fasta file.')
+parser.add_argument('input_file')
+parser.add_argument('--type', default='p', help='Denotes paired or single ends sequencing (default is p = paired, alternative is s = single)')
+parser.add_argument('--read_len', default=250, help='Length or simulated output reads (default is 250bp)')
+parser.add_argument('--coverage', default=1000, help='Depth of coverage for simulation (default is 1000X)')
+parser.add_argument('--fragment', default=500, help='Simulated fragment length (default is 500bp)')
+args = parser.parse_args()
+input_fasta = str(args.input_file)
+read_type = str(args.type)
+read_len = int(args.read_len)
+coverage = int(args.coverage)
+fragment = int(args.fragment) + 15
 
-# Generate output fasta file
-output_fasta = str(sys.argv[1]).split('/')[-1].split('.fasta')[0] + '.' + str(read_len) + 'bp.' + str(coverage) + 'X.simreads.fasta'
-reads = open(output_fasta, 'w')
+# Generate output fasta file(s)
+reads_f = input_fasta.split('/')[-1].rstrip('fastn') + str(read_len) + 'bp.R1.' + str(coverage) + 'X.sim_reads.fasta'
+reads_f = open(reads_f, 'w')
+if read_type != 's':
+	reads_r = input_fasta.split('/')[-1].rstrip('fastn') + str(read_len) + 'bp.R2.' + str(coverage) + 'X.sim_reads.fasta'
+	reads_r = open(reads_r, 'w')
+	base_pairing = {'A':'T', 'T':'A', 'C':'G', 'G':'C'}
+
+# Calculate depth needed
+with open(input_fasta, 'r') as fasta:
+	genome_size = 0
+	for line in fasta:
+		if line[0] == '>' or line == '\n':
+			genome_size += len(line.strip())
+read_total = (coverage * genome_size) / read_len
+fragment_total = genome_size / fragment
+depth = round(read_total / fragment_total)
 
 # Identify longest sequence to correct coverage value
-with open(sys.argv[1], 'r') as fasta:
-        max_len = 0
+with open(input_fasta, 'r') as fasta:
+        read_num = 0
+        current_seq = ''
         for line in fasta:
-                if line[0] == '>' or line == '\n':
-                        continue
-                elif len(line.strip()) > max_len:
-                        max_len = len(line.strip())
+        	if line[0] == '>' or line == '\n':
+        		if current_seq == '':
+        			continue
+        		else:
+        			# Generate sequence fragmentation
+        			fragments = [current_seq[0+i:fragment+i] for i in range(0, len(current_seq), fragment)]
+        			leading_positions = random.choices(range(1, 25), k=depth)
+        			if read_type != 's':
+        				lagging_positions = [-x for x in leading_positions]
+        				random.shuffle(lagging_positions)
 
-# Calculate necessary depth to acheive desired coverage
-depth = (max_len * coverage) / read_len
+        			# Generate simulate reads
+        			min_len = int(read_len - 25)
+        			for seq in fragments:        				
+        				# Cycle through randomly generated start sites
+        				for x in range(0, len(leading_positions)):
 
-# Generate simulated reads
-with open(sys.argv[1], 'r') as contigs:
+        					# Remove a few bases from each side
+        					lead_trim = random.randint(1,25)
+        					lag_trim = random.randint(1,25) * -1
+        					seq = seq[lead_trim:lag_trim]
+        					if len(seq) < min_len: continue
+        					seq = seq.upper()
 
-        read_count = 1
-        for line in contigs:
-                if line[0] == '>' or line == '\n': continue
+        					# Single-end
+        					read_num += 1
+        					read_name = '>sim_read_F_' + str(read_num) + '\n'
+        					start = leading_positions[x]
+        					stop = start + read_len
+        					read = seq[start:stop] + '\n'
+        					reads_f.write(read_name)
+        					reads_f.write(read)
 
-                curr_seq = line.strip()
-                curr_len = len(curr_seq) - read_len
-                curr_depth = round((float(len(curr_seq)) / max_len) * depth)
+        					# Paired-end
+        					if read_type != 's':
+        						read_name = '>sim_read_R_' + str(read_num) + '\n'
+        						stop = lagging_positions[x]
+        						start = start - read_len
+        						read = seq[start:stop]
 
-                for index in range(0,int(curr_depth)):
-                        curr_name = '>sim_read_' + str(read_count) + '\n'
-                        reads.write(curr_name)
-                        read_count += 1
+        						# Create reverse complement
+        						read = list(read[::-1])
+        						read = [base_pairing.get(base, base) for base in read]
+        						read = ''.join(read) + '\n'
+        						reads_r.write(read_name)
+        						reads_r.write(read)
 
-                        curr_start = random.randint(0,curr_len)
-                        curr_end = curr_start + read_len
-                        curr_read = curr_seq[curr_start:curr_end] + '\n'
-                        reads.write(curr_read)
+        			current_seq = ''
+        			continue
 
-reads.close()
+        	else:
+        		current_seq += line.strip()
+
+
+# Close output files
+reads_f.close()
+if read_type == 'p':
+	reads_r.close()
 
