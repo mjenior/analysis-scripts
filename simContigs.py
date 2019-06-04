@@ -1,10 +1,25 @@
 #!/usr/bin/env python
 # Simulates assembled contigs using a full genome reference
-# simAssembly.py genome.fasta 
 
 import sys
 import os
 import random 
+import argparse
+
+# User defined arguments
+parser = argparse.ArgumentParser(description='Generate simulated assembled contigs for a genome fasta.')
+parser.add_argument('genome_file')
+parser.add_argument('--min', default=1500, help='Minimum length of simulated output contigs (default is 1500 bp)')
+parser.add_argument('--max', default=35000, help='Maximum length of simulated output contigs (default is 35000 bp)')
+args = parser.parse_args()
+genome_file = str(args.genome_file)
+min_len = int(args.min)
+max_len = int(args.max)
+
+# Create output fasta file name
+contigs_file = genome_file.rstrip('fastn') + str(min_len) + 'bp.' + str(max_len) + 'bp.' + 'sim_contigs.fasta'
+
+#-------------------------------------------------------------------#
 
 # Trims a small amount of reads off both ends of a contig
 def addContigGaps(sequence):
@@ -52,21 +67,11 @@ def pickContigLength(minimum = 1500, maximum = 90000):
 
 	return(select_len)
 
-
-# Create output contig and read files
-fasta_name = str(sys.argv[1]).rstrip('fastn')
-contigs_file = fasta_name + 'sim_contigs.fasta'
-contigs_file = open(contigs_file, 'w')
-
-#min_len = int(sys.argv[2])
-min_len = 1500
-#max_len = int(sys.argv[3])
-max_len = 35000
-
 #-------------------------------------------------------------------#
 
 # Create the simulated assembly and read data
-with open(sys.argv[1], 'r') as genome_fasta:
+contigs_file = open(contigs_file, 'w')
+with open(genome_file, 'r') as genome_fasta:
 
 	contig_count = 0
 	current_seq = ''

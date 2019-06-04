@@ -16,7 +16,7 @@ parser.add_argument('--read_len', default=150, help='Length or simulated output 
 parser.add_argument('--coverage', default=10, help='Depth of coverage for simulation (default is 50X)')
 #  https://doi.org/10.1371/journal.pone.0104579
 
-parser.add_argument('--fragment', default=400, help='Simulated fragment length (default is 300bp)')
+parser.add_argument('--fragment', default=300, help='Simulated fragment length (default is 300bp)')
 # Mitochondrial DNA A DNA Mapp Seq Anal. 2018 Aug;29(6):840-845. doi: 10.1080/24701394.2017.1373106. Epub 2017 Sep 5.
 
 args = parser.parse_args()
@@ -40,7 +40,7 @@ with open(input_fasta, 'r') as fasta:
 			if current_seq == '':
 				continue
 			else:
-				for x in range(0, copies):
+				for x in range(0, coverage):
 					frag = random.choice(fragment_dist)
 					leading = random.randint(0, frag-1)
 					fragments |= set([current_seq[0+i:frag+i] for i in range(leading, len(current_seq), frag)])
@@ -50,21 +50,10 @@ with open(input_fasta, 'r') as fasta:
 			current_seq += line.strip().upper()
 			genome_size += len(current_seq)
 
-	for x in range(0, copies):
+	for x in range(0, coverage):
 		frag = random.choice(fragment_dist)
 		leading = random.randint(0, frag-1)
 		fragments |= set([current_seq[0+i:frag+i] for i in range(leading, len(current_seq), frag)])
-
-contigs = input_fasta.split('/')[-1].rstrip('fastn') + str(fragment) + 'bp.sim_contigs.fasta'
-curr_contig = 1
-with open(contigs, 'w') as outfile:
-	for seq in fragments:
-		if len(seq) < read_len * 0.9:
-			continue # Screen for at least 90% of read length
-		else:
-			outfile.write('>Simulated_fragment_' + str(curr_contig) + '\n')
-			outfile.write(seq + '\n')
-			curr_contig += 1
 
 sys.stdout.write('\rFragmenting genome... Done\n')
 sys.stdout.flush()
