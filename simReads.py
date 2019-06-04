@@ -24,6 +24,7 @@ input_fasta = str(args.input_file)
 read_type = str(args.type)
 read_len = int(args.read_len)
 coverage = int(args.coverage)
+copies = int(coverage * 0.1)
 fragment = int(args.fragment)
 fragment_dist = [int(round(x)) for x in list(numpy.random.normal(fragment, 50, 1000))]
 
@@ -32,7 +33,6 @@ sys.stdout.write('\rFragmenting genome...')
 sys.stdout.flush()
 with open(input_fasta, 'r') as fasta:
 	genome_size = 0
-	copies = int(coverage * 0.1)
 	current_seq = ''
 	fragments = set()
 	for line in fasta:
@@ -44,7 +44,7 @@ with open(input_fasta, 'r') as fasta:
 					fragment = random.choice(fragment_dist)
 					leading = random.randint(0, fragment-1)
 					fragments |= set([current_seq[0+i:fragment+i] for i in range(leading, len(current_seq), fragment)])
-					current_seq == ''
+					current_seq = ''
 					continue
 		else:
 			current_seq += line.strip().upper()
@@ -59,7 +59,7 @@ sys.stdout.write('\rFragmenting genome... Done\n')
 sys.stdout.flush()
 
 # Calculate coverage statistics
-read_total = (coverage * genome_size) / read_len
+read_total = (copies * genome_size) / read_len
 fragment_total = len(fragments)
 depth = int(read_total / fragment_total)
 
@@ -101,20 +101,17 @@ for seq in fragments:
 			read = seq[-curr_read_len:]
 
 			# Create reverse complement
-			read = list(read[::-1])
-			read = [base_pairing.get(base, base) for base in read]
-			read = ''.join(read) + '\n'
+			read = ''.join([base_pairing.get(base, base) for base in list(read[::-1])]) + '\n'
 			reads_r.write(read_name)
 			reads_r.write(read)
 
 	progress += increment
-	progress = float("%.3f" % progress)
-	sys.stdout.write('\rSimulating reads... ' + str(progress) + '%   ')
+	progress = float("%.2f" % progress)
+	sys.stdout.write('\rSimulating reads... ' + str(progress) + '% ')
 	sys.stdout.flush() 
 
-
 # Close output files
-sys.stdout.write('\rSimulating reads... Done    \n')
+sys.stdout.write('\rSimulating reads... Done  \n')
 sys.stdout.flush()
 reads_f.close()
 if read_type != 's':
