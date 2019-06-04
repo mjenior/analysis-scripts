@@ -16,7 +16,7 @@ parser.add_argument('--read_len', default=150, help='Length or simulated output 
 parser.add_argument('--coverage', default=10, help='Depth of coverage for simulation (default is 50X)')
 #  https://doi.org/10.1371/journal.pone.0104579
 
-parser.add_argument('--fragment', default=300, help='Simulated fragment length (default is 300bp)')
+parser.add_argument('--fragment', default=400, help='Simulated fragment length (default is 300bp)')
 # Mitochondrial DNA A DNA Mapp Seq Anal. 2018 Aug;29(6):840-845. doi: 10.1080/24701394.2017.1373106. Epub 2017 Sep 5.
 
 args = parser.parse_args()
@@ -29,7 +29,7 @@ fragment = int(args.fragment)
 fragment_dist = [int(round(x)) for x in list(numpy.random.normal(fragment, 50, 1000))]
 
 # Generate random fragments and calculate depth needed per fragment
-sys.stdout.write('\rFragmenting genome...')
+sys.stdout.write('\nFragmenting genome...')
 sys.stdout.flush()
 with open(input_fasta, 'r') as fasta:
 	genome_size = 0
@@ -41,9 +41,9 @@ with open(input_fasta, 'r') as fasta:
 				continue
 			else:
 				for x in range(0, copies):
-					fragment = random.choice(fragment_dist)
-					leading = random.randint(0, fragment-1)
-					fragments |= set([current_seq[0+i:fragment+i] for i in range(leading, len(current_seq), fragment)])
+					frag = random.choice(fragment_dist)
+					leading = random.randint(0, frag-1)
+					fragments |= set([current_seq[0+i:frag+i] for i in range(leading, len(current_seq), frag)])
 					current_seq = ''
 					continue
 		else:
@@ -51,9 +51,20 @@ with open(input_fasta, 'r') as fasta:
 			genome_size += len(current_seq)
 
 	for x in range(0, copies):
-		fragment = random.choice(fragment_dist)
-		leading = random.randint(0, fragment-1)
-		fragments |= set([current_seq[0+i:fragment+i] for i in range(leading, len(current_seq), fragment)])
+		frag = random.choice(fragment_dist)
+		leading = random.randint(0, frag-1)
+		fragments |= set([current_seq[0+i:frag+i] for i in range(leading, len(current_seq), frag)])
+
+contigs = input_fasta.split('/')[-1].rstrip('fastn') + str(fragment) + 'bp.sim_contigs.fasta'
+curr_contig = 1
+with open(contigs, 'w') as outfile:
+	for seq in fragments:
+		if len(seq) < read_len * 0.9:
+			continue # Screen for at least 90% of read length
+		else:
+			outfile.write('>Simulated_fragment_' + str(curr_contig) + '\n')
+			outfile.write(seq + '\n')
+			curr_contig += 1
 
 sys.stdout.write('\rFragmenting genome... Done\n')
 sys.stdout.flush()
@@ -100,18 +111,18 @@ for seq in fragments:
 			read_name = '>Simulated_short_read_R_' + str(read_num) + '\n'
 			read = seq[-curr_read_len:]
 
-			# Create reverse complement
+			# Create reverse complement - slowest progress most
 			read = ''.join([base_pairing.get(base, base) for base in list(read[::-1])]) + '\n'
 			reads_r.write(read_name)
 			reads_r.write(read)
 
 	progress += increment
 	progress = float("%.2f" % progress)
-	sys.stdout.write('\rSimulating reads... ' + str(progress) + '% ')
+	sys.stdout.write('\rSimulating reads... ' + str(progress) + '%  ')
 	sys.stdout.flush() 
 
 # Close output files
-sys.stdout.write('\rSimulating reads... Done  \n')
+sys.stdout.write('\rSimulating reads... Done    \n\n')
 sys.stdout.flush()
 reads_f.close()
 if read_type != 's':
