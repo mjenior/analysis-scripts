@@ -49,7 +49,7 @@ stat_lst = calc_stats(read_lens)
 
 output_str = """
 # Input file name:\t{filename}
-# Total reads:\t{reads}
+# Total reads:\t\t{reads}
 # Total bases (Mb):\t{mb} 
 # Shortest read length:\t{short}
 # Longest read length:\t{long}
