@@ -3,13 +3,15 @@
 # Normalizes read abundances to gene and read length
 
 import sys
+import math
 
 with open(sys.argv[1], 'r') as idxStats:
 
         outFile = str(sys.argv[1]).rstrip('cstvx') + 'norm.tsv'
         outFile = open(outFile, 'w')
         #outFile = open(sys.argv[2], 'w')
-        outFile.write('target_name\ttarget_length\tnormalized_abundance\n')
+        #outFile.write('target_name\ttarget_length\tnormalized_abundance\n')
+        outFile.write('target_name\tnormalized_abundance\n')
 
         readLen = float(sys.argv[2])
         #readLen = float(sys.argv[3])
@@ -23,10 +25,11 @@ with open(sys.argv[1], 'r') as idxStats:
                         readAbund = float(line[2])
                         normAbund = (readAbund * readLen) / seqLen
 
-                        seqLen = str(int(seqLen))
-                        normAbund = str(round(normAbund, 4))
+                        #seqLen = str(int(seqLen))
+                        normAbund = str(int(math.ceil(normAbund)))
 
-                        entry = seqName + '\t' + seqLen + '\t' + normAbund + '\n'
+                        #entry = seqName + '\t' + seqLen + '\t' + normAbund + '\n'
+                        entry = seqName + '\t' + normAbund + '\n'
                         outFile.write(entry)
 
 outFile.close()
