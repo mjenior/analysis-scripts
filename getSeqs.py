@@ -4,38 +4,24 @@ Pulls out selected sequences from large fasta file based on tab-formatted blast 
 '''
 import sys
 
-def readBlast():
+bestHits = set()
+with open(sys.argv[1],'r') as blastOut:
 
-	with open(sys.argv[1],'r') as blastOut:
+	for line in blastOut:
+		bestHits |= set([line.split()[0]])
 
-		bestHits = []
-		for line in blastOut:
-			currHit = line.split()[0].replace('|','_')
-			bestHits.append(currHit)
+out_fasta = str(sys.argv[2]).rstrip('fastn') + 'filter.fasta'
+out_fasta = open(out_fasta, 'w')
 
-	return(bestHits)
-
-
-names = readBlast()
-
-reading = 0
-all_read = 0
 with open(sys.argv[2], 'r') as fasta:
 
-	print('\n')
 	for line in fasta:
 
-		if reading == 1:
-			print(line)
-			reading = 0
-			all_read += 1
-			if len(names) == all_read:
-				break
-			continue
+		if line[0] == '>':
+			name = line.strip().replace('>','')
+			if name in bestHits:
+				out_fasta.write(line)
+				seq = fasta.readline()
+				out_fasta.write(seq)
 
-		elif line[0] == '>':
-			name = line.strip().replace('>','').replace('|','_')
-			if name in names:
-				print(line.strip())
-				reading = 1
-
+out_fasta.close()
