@@ -8,15 +8,27 @@ fasta = str(sys.argv[1]).rstrip('fastq') + 'fasta'
 fasta = open(fasta, 'w')
 
 with open(sys.argv[1], 'r') as fastq:
-	read = 0
+
+	current = 1
 	for line in fastq:
-		if line[0] == '@'
+
+		if current == 1:
 			line = line.replace('@','>')
+			line = line.replace(' ','|')
 			fasta.write(line)
-			read = 1
+			current += 1
 			continue
-		elif read == 1
-			fasta.write(line)
-			read = 0
+
+		elif current == 2:
+			fasta.write(line + '\n')
+			current += 1
+			continue
+
+		elif current == 4:
+			current = 1
+			continue
+
+		else:
+			current += 1
 
 fasta.close()
