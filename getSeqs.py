@@ -13,6 +13,7 @@ with open(sys.argv[1],'r') as blastOut:
 out_fasta = str(sys.argv[2]).rstrip('fastn') + 'filter.fasta'
 out_fasta = open(out_fasta, 'w')
 
+include_seq = 0
 with open(sys.argv[2], 'r') as fasta:
 
 	for line in fasta:
@@ -21,7 +22,11 @@ with open(sys.argv[2], 'r') as fasta:
 			name = line.strip().replace('>','')
 			if name in bestHits:
 				out_fasta.write(line)
-				seq = fasta.readline()
-				out_fasta.write(seq)
+				include_seq = 1
+				continue
+		
+		elif include_seq == 1:
+			out_fasta.write(line)
+			include_seq = 0
 
 out_fasta.close()
