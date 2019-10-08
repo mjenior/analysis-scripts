@@ -22,7 +22,7 @@ if blast_file == 'default' or fasta_file == 'default':
 	raise NameError('Required input files not provided')
 
 if out_fasta == 'default':
-	out_fasta = str(out_fasta).rstrip('fastn') + 'filter.fasta'
+	out_fasta = str(out_fasta).rstrip('fastn') + 'keep.fasta'
 out_fasta = open(out_fasta, 'w')
 
 bestHits = set()
@@ -43,7 +43,7 @@ with open(fasta_file, 'r') as fasta:
 					include_seq = 1
 					continue
 			else:
-				if not name in bestHits:
+				if name in bestHits:
 				out_fasta.write(line)
 				include_seq = 1
 				continue
