@@ -1,5 +1,5 @@
 #!/usr/bin/python
-'''USAGE: getSeqs.py --blast BLAST_results --fasta fasta_file --out screened_fasta --include True
+'''USAGE: getSeqs.py --blast BLAST_results --fasta fasta_file --out screened_fasta --keep True
 Pulls out selected sequences from large fasta file based on tab-formatted blast results
 '''
 import sys
@@ -10,13 +10,13 @@ parser = argparse.ArgumentParser(description='Screen Fasta files based on BLAST 
 parser.add_argument('--blast', default='default', help='Tab-formatted BLAST output file')
 parser.add_argument('--fasta', default='default', help='Fasta file to be screened')
 parser.add_argument('--out', default='default', help='Name of output fasta file')
-parser.add_argument('--include', default=True, help='Include or exclude those sequences found in BLAST file (True of False)')
+parser.add_argument('--keep', default=True, help='Include or exclude those sequences found in BLAST file (True of False)')
 
 args = parser.parse_args()
 blast_file = str(args.blast)
 fasta_file = str(args.fasta)
 out_fasta = str(args.out)
-keep = args.include
+keep = args.keep
 
 if blast_file == 'default' or fasta_file == 'default':
 	raise NameError('Required input files not provided')
