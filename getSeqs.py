@@ -22,7 +22,7 @@ if blast_file == 'default' or fasta_file == 'default':
 	raise NameError('Required input files not provided')
 
 if out_fasta == 'default':
-	out_fasta = str(out_fasta).rstrip('fastn') + 'keep.fasta'
+	out_fasta = fasta_file.rstrip('fastn') + 'keep.fasta'
 out_fasta = open(out_fasta, 'w')
 
 bestHits = set()
