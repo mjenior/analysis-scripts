@@ -44,9 +44,9 @@ with open(fasta_file, 'r') as fasta:
 					continue
 			else:
 				if name in bestHits:
-				out_fasta.write(line)
-				include_seq = 1
-				continue
+					out_fasta.write(line)
+					include_seq = 1
+					continue
 		
 		elif include_seq == 1:
 			out_fasta.write(line)
