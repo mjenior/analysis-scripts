@@ -10,11 +10,12 @@ with open(sys.argv[1], 'r') as blast:
 
 	for line in blast:
 		hit = line.split()[1]
+		species = hit.split('|')[1]
 
-		if not hit in blastHit_dict.keys():
-			blastHit_dict[hit] = 1
+		if not species in blastHit_dict.keys():
+			blastHit_dict[species] = 1
 		else:
-			blastHit_dict[hit] += 1
+			blastHit_dict[species] += 1
 
 with open(sys.argv[2], 'w') as outFile:
 
