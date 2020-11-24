@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description='Prune contig bins based on quality
 parser.add_argument('outlier_table')
 parser.add_argument('--ext', default='fa', help='Bin fasta file extension')
 parser.add_argument('--bins', default='./', help='Directory for metagenomic contig bins')
-parser.add_argument('--report', default='report.txt', help='Output text file with pruning report')
+parser.add_argument('--report', default='pruning_report.txt', help='Output text file with pruning report')
 
 args = parser.parse_args()
 
