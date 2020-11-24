@@ -43,19 +43,24 @@ with open(str(args.outlier_table), 'r') as outliers:
 # Read bin fasta with outliers and write them to new files, omitting outliers
 total_include = 0
 total_exclude = 0
+countsDict = {}
+print('\nOutlier contigs pruned:')
 for index in bin_list:
 	bin_name = index + fasta_ext
 	new_bin_name = index + '.pruned.fna'
-
 	new_bin = open(new_bin_name, 'w')
+	in_count = 0
+	out_count = 0
 	with open(bin_name, 'r') as fasta:
 
 		excluding = 0
 		exclude = outlier_dict[index]
 		for line in fasta:
 			if line[0] == '>':
+				in_count += 1
 				seq_name = line.strip().replace('>','')
 				if not seq_name in exclude:
+					out_count += 1
 					excluding = 0
 					total_include += 1
 					new_bin.write(line)
@@ -68,6 +73,9 @@ for index in bin_list:
 				new_bin.write(line)
 
 	new_bin.close()
+	in_count = '(' + str(in_count) + ')'
+	out_count = '(' + str(out_count) + ')'
+	print(bin_name, in_count, '-->', new_bin_name, out_count)
 
 # Report a few stats to the user
 print('\nContigs excluded: ' + str(total_exclude))
@@ -77,10 +85,10 @@ perc_exclude = round(perc_exclude, 3)
 print('Percent exclusion: ' + str(perc_exclude) + '%\n')
 
 # Simply rename a copy of those fastas without outliers for continuity
+print('\nNo outlier contigs detected:')
 fastas = '*' + fasta_ext
 fastas = glob.glob(fastas)
 unchanged = []
-print('No outliers found in --> copying contents to')
 for current in fastas:
 	current = current.replace(fasta_ext, '')
 	current = current.replace('.pruned.fna', '')
@@ -88,7 +96,7 @@ for current in fastas:
 		src = current + fasta_ext
 		dst = current + '.pruned.fna'
 		copyfile(src, dst)
-		print(src + ' --> ' + dst)
+		print(src, '-->', dst)
 
 print('')
 if curr_wd != bin_dir:
