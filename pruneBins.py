@@ -9,7 +9,7 @@ import os
 from shutil import copyfile
 
 # User defined arguments
-parser = argparse.ArgumentParser(description='Generate bipartite metabolic models and calculates importance of substrate nodes based on gene expression.')
+parser = argparse.ArgumentParser(description='Prune contig bins based on quality data')
 parser.add_argument('outlier_table')
 parser.add_argument('--ext', default='fa', help='Bin fasta file extension')
 parser.add_argument('--bins', default='bins/', help='Directory for metagenomic contig bins')
