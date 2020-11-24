@@ -48,7 +48,6 @@ total_exclude_contigs = 0
 total_include_bases = 0
 total_exclude_bases = 0
 newFiles = []
-print('\nOutlier contigs pruned:')
 for index in bin_list:
 	bin_name = index + fasta_ext
 	new_bin_name = index + '.pruned.fna'
@@ -104,7 +103,7 @@ reportFile.write('\nBases excluded: ' + str(total_exclude_bases) + '\n')
 reportFile.write('Bases included: ' + str(total_include_bases) + '\n')
 perc_exclude_bases = (float(total_exclude_bases) / float(total_include_bases)) * 100.0
 perc_exclude_bases = round(perc_exclude_bases, 3)
-reportFile.write('Percent base exclusion: ' + str(perc_exclude_contigs) + '%\n\n')
+reportFile.write('Percent base exclusion: ' + str(perc_exclude_bases) + '%\n\n')
 
 # Write files names and size changes to report
 reportFile.write('Outlier contigs pruned from:\n')
