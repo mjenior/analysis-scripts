@@ -11,8 +11,9 @@ outFasta = open(outFasta, 'w')
 with open(sys.argv[1], 'r') as inFasta:
 
 	firstLine = inFasta.readline()
-	firstLine = firstLine.replace(' ', '_').replace('|', '__').replace(',', '.')
-	outFasta.write(firstLine)
+	entry = firstLine.split()[0]
+	entry = entry.replace('|', '_').replace(',', '.')
+	outFasta.write(entry + '\n')
 
 	seq = ''
 	for line in inFasta:
@@ -21,13 +22,15 @@ with open(sys.argv[1], 'r') as inFasta:
 			seq = seq.upper() + '\n\n'
 			outFasta.write(seq)
 			seq = ''
-			
-			line = line.replace(' ', '_').replace('|', '__').replace(',', '.')
-			outFasta.write(line)
+
+			entry = line.split()[0]
+			entry = entry.replace('|', '_').replace(',', '.')
+			outFasta.write(entry + '\n')
+
 			continue
 		else:
 			seq += line.strip()
 
-seq = seq.upper() + '\n\n'
+seq = seq.upper() + '\n'
 outFasta.write(seq)
 outFasta.close()

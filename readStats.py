@@ -15,7 +15,7 @@ q_score = {'!': 0, '\"': 1, '#': 2, '$': 3, '%': 4, '&': 5, '\'': 6, '(': 7, ')'
 def read_fastq(fastq):
 
         lenList = []
-        qualList = 0
+        qualList = []
 
         currLine = 1
         for line in fastq:
@@ -83,5 +83,5 @@ output_str = """
         mode = stat_lst[5],
         mode_freq = stat_lst[6])
 
-print output_str
+print(output_str)
 
