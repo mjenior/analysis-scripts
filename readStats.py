@@ -62,11 +62,12 @@ read_lens, read_quals = read_fastq(open(sys.argv[1], 'r'))
 
 stat_lst = calc_stats(read_lens)
 ave_qual = sum(read_quals) / len(read_quals)
+ave_qual = round(ave_qual, 2)
 
 output_str = """
 # Input file name:\t{filename}
 # Total reads:\t\t{reads}
-# Average Q-score:\t\t{qual}
+# Average Q-score:\t{qual}
 # Total bases (Mb):\t{mb} 
 # Shortest read length:\t{short}
 # Longest read length:\t{long}
