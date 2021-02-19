@@ -4,7 +4,7 @@
 
 import sys
 
-out_file = str(sys.argv[1]).rstrip('tsvx')
+out_file = str(sys.argv[1]).rstrip('tsvx') + 'format.tsv'
 out_file = open(out_file, 'w')
 
 with open(sys.argv[1], 'r') as in_file:
@@ -21,5 +21,5 @@ with open(sys.argv[1], 'r') as in_file:
 			out_file.write(entry)
 
 out_file.close()
-print('Removed contigs: ' + str(removed))
+print('Removed contigs:', removed)
 
