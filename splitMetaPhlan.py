@@ -75,9 +75,9 @@ with open(sys.argv[1],'r') as metaphlan:
 all_tax = ['phylum', 'class', 'order', 'family', 'genus', 'species']
 dict_lst = [phylum_dict, class_dict, order_dict, family_dict, genus_dict, species_dict]
 for tax_lvl in range(0, 6):
-        outname = str(sys.argv[1]).rstrip('txsv') + 'bact.' + all_tax[tax_lvl] + '.tsv'
+        outname = str(sys.argv[1]).rstrip('out') + 'bacteria.' + all_tax[tax_lvl] + '.tsv'
         with open(outname, 'w') as outfile:
-                entry = all_tax[tax_lvl].title() + '\tRel_Abund\n'
+                entry = all_tax[tax_lvl] + '\trelabund\n'
                 outfile.write(entry)
                 total_bact = sum(dict_lst[tax_lvl].values())
 
