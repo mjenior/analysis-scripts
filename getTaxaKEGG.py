@@ -27,5 +27,11 @@ try:
 except KeyError:
 	trans_maj = majority
 
-perc = '(' + str(round((float(taxa.count(majority)) / float(len(taxa))) * 100.0, 1)) + '%)'
+perc = round((float(taxa.count(majority)) / float(len(taxa))) * 100.0, 1)
+if perc >= 75.0:
+	keep = 'KEEP***'
+else:
+	keep = ''
+	
+perc = '(' + str(perc) + '%) ' + keep
 print(sys.argv[1], '|', trans_maj, '|', taxa.count(majority), 'of', len(taxa), perc)
